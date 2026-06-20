@@ -133,6 +133,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
 
   return (
     <>
+      <div style={st.barreNom}>👑 Déwari Abenatchan</div>
       <div style={{ ...st.banniere, background: slide.fond }}>
         <div style={st.bannieretEmoji}>{slide.emoji}</div>
         <div style={st.bannierTitre}>{slide.titre}</div>
@@ -311,10 +312,12 @@ function ModalAuth({ contexte, onFermer, onSuccesSalon, onSuccesTournoi, tournoi
 function ChatSalon({ salon, membre, onRetour }) {
   const [messages, setMessages] = useState([])
   const [texte, setTexte] = useState('')
+  const [nbMembres, setNbMembres] = useState(salon.nbMembres || 0)
   const finRef = useRef(null)
 
   useEffect(() => {
     chargerMessages()
+    chargerNbMembres()
     const canal = supabase
       .channel(`salon-${salon.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `salon_id=eq.${salon.id}` }, (payload) => {
@@ -325,6 +328,14 @@ function ChatSalon({ salon, membre, onRetour }) {
   }, [salon.id])
 
   useEffect(() => { finRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  async function chargerNbMembres() {
+    const { count } = await supabase
+      .from('membres')
+      .select('*', { count: 'exact', head: true })
+      .eq('salon_id', salon.id)
+    setNbMembres(count || 0)
+  }
 
   async function chargerMessages() {
     const { data } = await supabase
@@ -347,7 +358,11 @@ function ChatSalon({ salon, membre, onRetour }) {
     <div style={st.page}>
       <div style={st.enteteChat}>
         <button onClick={onRetour} style={st.retour}>←</button>
-        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff' }}>{salon.nom}</span>
+        <div style={st.avatarGroupe}>{salon.palier / 1000}K</div>
+        <div style={{ marginLeft: 10 }}>
+          <div style={{ fontWeight: 800, color: '#fff', fontSize: 15 }}>{salon.nom}</div>
+          <div style={{ fontSize: 12, color: '#9a93b5' }}>{nbMembres} membre{nbMembres > 1 ? 's' : ''}</div>
+        </div>
       </div>
       <div style={st.zoneMessages}>
         {messages.map((m) => {
@@ -371,6 +386,8 @@ function ChatSalon({ salon, membre, onRetour }) {
 
 const st = {
   page: { maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: '#16142a', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' },
+  barreNom: { textAlign: 'center', padding: '14px 0 0', fontWeight: 800, fontSize: 16, letterSpacing: 0.5, color: '#fff' },
+  avatarGroupe: { width: 38, height: 38, borderRadius: '50%', background: 'linear-gradient(135deg,#FFB800,#FF4D6D)', color: '#1d1a35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, flexShrink: 0 },
   banniere: { height: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: 20, textAlign: 'center', transition: 'background 0.6s ease' },
   bannieretEmoji: { fontSize: 48, marginBottom: 8 },
   bannierTitre: { fontSize: 20, fontWeight: 800, lineHeight: 1.3, textShadow: '0 2px 8px rgba(0,0,0,0.3)' },
