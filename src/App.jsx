@@ -167,6 +167,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
             <p style={{ margin: '4px 0' }}>{tournoi.description}</p>
             {tournoi.premier_prix && <p style={{ margin: '4px 0' }}>🥇 1er prix : {tournoi.premier_prix}</p>}
             {tournoi.deuxieme_prix && <p style={{ margin: '4px 0' }}>🥈 2e prix : {tournoi.deuxieme_prix}</p>}
+            {tournoi.troisieme_prix && <p style={{ margin: '4px 0' }}>🥉 3e prix : {tournoi.troisieme_prix}</p>}
           </div>
         )}
       </div>
