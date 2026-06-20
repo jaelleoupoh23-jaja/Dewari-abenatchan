@@ -5,12 +5,11 @@ body {
   margin: 0;
   font-family: 'Poppins', -apple-system, system-ui, sans-serif;
   color: #2c2546;
-  background: linear-gradient(-45deg, #1a1530, #3C3489, #534AB7, #1a1530, #0a0815);
+  background: linear-gradient(-45deg, #1a1530, #26215C, #0a0815, #3C3489, #1a1530);
   background-size: 400% 400%;
-  animation: gradientMove 18s ease infinite;
+  animation: gradientMove 22s ease infinite;
   min-height: 100vh;
 }
-
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
