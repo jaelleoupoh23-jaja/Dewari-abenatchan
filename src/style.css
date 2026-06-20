@@ -1,0 +1,55 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, system-ui, sans-serif;
+  background: #f4f3ef;
+  color: #222;
+}
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+h1 { font-size: 20px; font-weight: 600; }
+input, button, textarea {
+  font-size: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 10px;
+  font-family: inherit;
+}
+button {
+  background: #2b6cb0;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: auto;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e0d8;
+}
+.chat-box {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  height: 320px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border: 1px solid #e2e0d8;
+}
+.msg { margin-bottom: 10px; }
+.msg .pseudo { font-size: 12px; font-weight: 600; color: #555; }
+.msg .text { font-size: 14px; }
+.msg img { max-width: 100%; border-radius: 8px; margin-top: 4px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.tabs button { flex: 1; background: #ddd; color: #222; }
+.tabs button.active { background: #2b6cb0; color: white; }
+.error { color: #c0392b; font-size: 13px; }
+.code-item { display: flex; justify-content: space-between; align-items: center; }
