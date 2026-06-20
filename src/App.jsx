@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 
-const LOGO_URL = 'https://raw.githubusercontent.com/jaelleoupoh23-jaja/Dewari-abenatchan/main/Image%20ChatGPT%2020%20juin%202026%2C%2016_26_29.png'
-
 const AVATAR_COLORS = ['#534AB7', '#EF9F27', '#1D9E75', '#D85A30', '#D4537E', '#185FA5']
 function colorFor(name) {
   if (!name) return AVATAR_COLORS[0]
@@ -37,7 +35,7 @@ export default function App() {
     return (
       <div className="container">
         <div className="landing">
-          <img src={LOGO_URL} alt="Déwari Abenatchan" style={{ width: 96, height: 96, objectFit: 'contain', marginBottom: 8 }} />
+          <div className="crown">👑</div>
           <h1>Déwari Abenatchan</h1>
           <p className="tagline">Le rendez-vous des rois et reines du Ludo</p>
         </div>
@@ -55,10 +53,7 @@ export default function App() {
 
   return (
     <div className="container">
-      <h1 className="app-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <img src={LOGO_URL} alt="" style={{ width: 28, height: 28, objectFit: 'contain' }} />
-        Déwari Abenatchan
-      </h1>
+      <h1 className="app-title">👑 Déwari Abenatchan</h1>
       {session ? <GroupScreen session={session} /> : <AuthScreen />}
     </div>
   )
