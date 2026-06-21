@@ -1,6 +1,6 @@
-const { RtcTokenBuilder, RtcRole } = require('agora-token')
+import { RtcTokenBuilder, RtcRole } from 'agora-token'
 
-module.exports = (req, res) => {
+export default function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
 
   const channelName = req.query.channel
