@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
+import AgoraRTC from 'agora-rtc-sdk-ng'
 
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
@@ -252,10 +253,10 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
         )}
         {tournoi?.description && (
           <div style={st.details}>
-            <p style={{ margin: '4px 0' }}>{tournoi.description}</p>
-            {tournoi.premier_prix && <p style={{ margin: '4px 0' }}>🥇 1er prix : {tournoi.premier_prix}</p>}
-            {tournoi.deuxieme_prix && <p style={{ margin: '4px 0' }}>🥈 2e prix : {tournoi.deuxieme_prix}</p>}
-            {tournoi.troisieme_prix && <p style={{ margin: '4px 0' }}>🥉 3e prix : {tournoi.troisieme_prix}</p>}
+            {tournoi.description && !tournoi.description.includes('À COMPLÉTER') && <p style={{ margin: '4px 0' }}>{tournoi.description}</p>}
+            {tournoi.premier_prix && !tournoi.premier_prix.includes('À COMPLÉTER') && <p style={{ margin: '4px 0' }}>🥇 1er prix : {tournoi.premier_prix}</p>}
+            {tournoi.deuxieme_prix && !tournoi.deuxieme_prix.includes('À COMPLÉTER') && <p style={{ margin: '4px 0' }}>🥈 2e prix : {tournoi.deuxieme_prix}</p>}
+            {tournoi.troisieme_prix && !tournoi.troisieme_prix.includes('À COMPLÉTER') && <p style={{ margin: '4px 0' }}>🥉 3e prix : {tournoi.troisieme_prix}</p>}
           </div>
         )}
       </div>
@@ -272,7 +273,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
                 onClick={() => !complet && onChoisirSalon(s)}
                 style={{ ...st.ligneSalon, opacity: complet ? 0.5 : 1, cursor: complet ? 'not-allowed' : 'pointer' }}
               >
-                <div style={st.avatar}>{s.palier / 1000}K</div>
+                <div style={st.avatar}>{s.palier / 1000}</div>
                 <div style={{ flex: 1, marginLeft: 12, minWidth: 0 }}>
                   <div style={{ fontWeight: 800 }}>{s.nom}</div>
                   <div style={{ fontSize: 13, color: '#9a93b5' }}>Rejoindre ce salon</div>
@@ -402,9 +403,14 @@ function ChatSalon({ salon, membre, onRetour }) {
   const [nbMembres, setNbMembres] = useState(salon.nbMembres || 0)
   const [enTrainEcrire, setEnTrainEcrire] = useState([])
   const [envoiPhoto, setEnvoiPhoto] = useState(false)
+  const [enAppel, setEnAppel] = useState(false)
+  const [micCoupe, setMicCoupe] = useState(false)
+  const [participantsAppel, setParticipantsAppel] = useState([])
   const finRef = useRef(null)
   const canalRef = useRef(null)
   const inputFichierRef = useRef(null)
+  const clientAgoraRef = useRef(null)
+  const pisteAudioRef = useRef(null)
 
   useEffect(() => {
     chargerMessages()
@@ -494,11 +500,64 @@ function ChatSalon({ salon, membre, onRetour }) {
     e.target.value = ''
   }
 
+  async function rejoindreAppel() {
+    try {
+      const reponse = await fetch(`/api/agora-token?channel=${salon.id}&uid=0`)
+      const { token, appId } = await reponse.json()
+
+      const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
+      clientAgoraRef.current = client
+
+      client.on('user-published', async (user, mediaType) => {
+        await client.subscribe(user, mediaType)
+        if (mediaType === 'audio') user.audioTrack.play()
+        setParticipantsAppel((p) => [...new Set([...p, user.uid])])
+      })
+
+      client.on('user-left', (user) => {
+        setParticipantsAppel((p) => p.filter((id) => id !== user.uid))
+      })
+
+      await client.join(appId, salon.id, token, null)
+      const pisteAudio = await AgoraRTC.createMicrophoneAudioTrack()
+      pisteAudioRef.current = pisteAudio
+      await client.publish([pisteAudio])
+
+      setEnAppel(true)
+      setParticipantsAppel([membre.id])
+    } catch (err) {
+      alert("Impossible de rejoindre l'appel. Vérifie que ton micro est autorisé.")
+    }
+  }
+
+  async function quitterAppel() {
+    pisteAudioRef.current?.close()
+    await clientAgoraRef.current?.leave()
+    clientAgoraRef.current = null
+    setEnAppel(false)
+    setMicCoupe(false)
+    setParticipantsAppel([])
+  }
+
+  function couperMicro() {
+    if (!pisteAudioRef.current) return
+    const nouvelEtat = !micCoupe
+    pisteAudioRef.current.setEnabled(!nouvelEtat)
+    setMicCoupe(nouvelEtat)
+  }
+
+  useEffect(() => {
+    return () => {
+      pisteAudioRef.current?.close()
+      clientAgoraRef.current?.leave()
+    }
+  }, [])
+
   return (
     <div style={st.page}>
       <div style={st.enteteChat}>
         <button onClick={onRetour} style={st.retour}>←</button>
-        <div style={st.avatarGroupe}>{salon.palier / 1000}K</div>
+        <div style={st.avatarGroupe}>{salon.palier / 1000}</div>
         <div style={{ marginLeft: 10 }}>
           <div style={{ fontWeight: 800, color: '#fff', fontSize: 15 }}>{salon.nom}</div>
           <div style={{ fontSize: 12, color: '#9a93b5' }}>
@@ -507,7 +566,22 @@ function ChatSalon({ salon, membre, onRetour }) {
               : `${nbMembres} membre${nbMembres > 1 ? 's' : ''}`}
           </div>
         </div>
+        {!enAppel ? (
+          <button onClick={rejoindreAppel} style={st.boutonAppel} title="Appel audio">📞</button>
+        ) : (
+          <div style={st.badgeAppelActif}>🔊 {participantsAppel.length}</div>
+        )}
       </div>
+
+      {enAppel && (
+        <div style={st.barreAppel}>
+          <span style={{ fontSize: 13 }}>📞 Appel en cours · {participantsAppel.length} participant{participantsAppel.length > 1 ? 's' : ''}</span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={couperMicro} style={st.boutonMicro}>{micCoupe ? '🔇' : '🎙️'}</button>
+            <button onClick={quitterAppel} style={st.boutonRaccrocher}>📵</button>
+          </div>
+        </div>
+      )}
       <div style={st.zoneMessages}>
         {messages.map((m) => {
           const moi = m.membre_id === membre.id
@@ -589,6 +663,11 @@ const st = {
   erreur: { color: '#FF6B6B', fontSize: 13, textAlign: 'center' },
   lienFermer: { background: 'none', border: 'none', color: '#9a93b5', marginTop: 12, width: '100%', fontSize: 13 },
   enteteChat: { display: 'flex', alignItems: 'center', padding: '16px 16px 10px', borderBottom: '1px solid #2a2745' },
+  boutonAppel: { marginLeft: 'auto', background: '#23A559', border: 'none', borderRadius: '50%', width: 38, height: 38, fontSize: 16, color: '#fff' },
+  badgeAppelActif: { marginLeft: 'auto', background: '#23A559', borderRadius: 14, padding: '4px 10px', fontSize: 12, fontWeight: 700 },
+  barreAppel: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', background: '#15311f', borderBottom: '1px solid #2a2745' },
+  boutonMicro: { background: '#23203a', border: 'none', borderRadius: '50%', width: 34, height: 34, fontSize: 14 },
+  boutonRaccrocher: { background: '#FF4D6D', border: 'none', borderRadius: '50%', width: 34, height: 34, fontSize: 14 },
   retour: { background: 'none', border: 'none', fontSize: 20, color: '#fff', cursor: 'pointer' },
   zoneMessages: { flex: 1, display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto', minHeight: 300, padding: '14px 16px' },
   bulle: { maxWidth: '75%', padding: '8px 12px', borderRadius: 14, fontSize: 14 },
