@@ -125,6 +125,7 @@ export default function App() {
             inscritTournoi={inscritTournoi}
             onChoisirSalon={ouvrirSalon}
             onOuvrirTournoi={() => setModalAuth({ pourTournoi: true })}
+            onOuvrirDe={() => setEcran('de')}
             refTournoi={refTournoi}
             refSalons={refSalons}
           />
@@ -148,6 +149,10 @@ export default function App() {
           onOuvrirInscription={() => setModalAuth({ pourTournoi: true })}
           onRetour={() => setEcran('accueil')}
         />
+      )}
+
+      {ecran === 'de' && (
+        <PageDe onRetour={() => setEcran('accueil')} />
       )}
 
       {ecran === 'chat' && membre && salonActif && (
@@ -218,7 +223,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   )
 }
 
-function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, refTournoi, refSalons }) {
+function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, refTournoi, refSalons }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -241,6 +246,20 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
       </div>
 
       <div ref={refTournoi} />
+
+      <div style={st.section}>
+        <div
+          onClick={onOuvrirDe}
+          style={st.carteDe}
+        >
+          <div style={st.carteDeEmoji}>🎲</div>
+          <div style={{ flex: 1, marginLeft: 12 }}>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dé</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · premier à 10 gagne</div>
+          </div>
+          <div style={{ fontSize: 20 }}>→</div>
+        </div>
+      </div>
 
       <div ref={refSalons} style={st.section}>
         <div style={st.sectionTitre}>Choisis ton salon</div>
@@ -270,6 +289,150 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
     </>
   )
 }
+
+function PageDe({ onRetour }) {
+  const [phase, setPhase] = useState('config') // 'config' | 'jeu' | 'fini'
+  const [nbJoueurs, setNbJoueurs] = useState(2)
+  const [noms, setNoms] = useState(['Joueur 1', 'Joueur 2', 'Joueur 3', 'Joueur 4'])
+  const [scores, setScores] = useState([])
+  const [tour, setTour] = useState(0)
+  const [dernierLancer, setDernierLancer] = useState(null)
+  const [enTrainDeLancer, setEnTrainDeLancer] = useState(false)
+  const [vainqueur, setVainqueur] = useState(null)
+
+  function demarrer() {
+    setScores(Array(nbJoueurs).fill(0))
+    setTour(0)
+    setDernierLancer(null)
+    setVainqueur(null)
+    setPhase('jeu')
+  }
+
+  function lancerDe() {
+    if (enTrainDeLancer || vainqueur !== null) return
+    setEnTrainDeLancer(true)
+    const valeur = Math.floor(Math.random() * 6) + 1
+    setTimeout(() => {
+      const points = valeur === 6 ? 1.5 : valeur
+      setScores((anciens) => {
+        const nouveaux = [...anciens]
+        nouveaux[tour] = nouveaux[tour] + points
+        if (nouveaux[tour] >= 10) {
+          setVainqueur(tour)
+          setPhase('fini')
+        }
+        return nouveaux
+      })
+      setDernierLancer({ valeur, points, joueur: tour })
+      setEnTrainDeLancer(false)
+      setTour((t) => (t + 1) % nbJoueurs)
+    }, 500)
+  }
+
+  function rejouer() {
+    setPhase('config')
+  }
+
+  return (
+    <div style={st.page}>
+      <div style={st.enteteChat}>
+        <button onClick={onRetour} style={st.retour}>←</button>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Le Dé</span>
+      </div>
+
+      {phase === 'config' && (
+        <div style={st.section}>
+          <div style={st.sectionTitre}>Combien de joueurs ?</div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            {[2, 4].map((n) => (
+              <button
+                key={n}
+                onClick={() => setNbJoueurs(n)}
+                style={{ ...st.ongletAuth, flex: 1, ...(nbJoueurs === n ? st.ongletActif : {}) }}
+              >
+                {n} joueurs
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
+            {Array.from({ length: nbJoueurs }).map((_, i) => (
+              <input
+                key={i}
+                value={noms[i]}
+                onChange={(e) => {
+                  const copie = [...noms]
+                  copie[i] = e.target.value
+                  setNoms(copie)
+                }}
+                style={st.input}
+                placeholder={`Nom du joueur ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          <div style={st.regleDe}>
+            Chaque lancer donne ses points normaux (1 à 5), sauf le <b>6</b> qui ne vaut que <b>1.5 point</b>. Le premier à atteindre <b>10 points</b> gagne.
+          </div>
+
+          <button onClick={demarrer} style={{ ...st.boutonPrincipal, marginTop: 18 }}>
+            Démarrer la partie
+          </button>
+        </div>
+      )}
+
+      {phase === 'jeu' && (
+        <div style={st.section}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {Array.from({ length: nbJoueurs }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  ...st.ligneSalon,
+                  background: i === tour ? '#2a2050' : '#1d1a35',
+                  border: i === tour ? '1px solid #FF4D6D' : 'none',
+                }}
+              >
+                <div style={{ flex: 1, fontWeight: 800 }}>{noms[i]}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#FFB800' }}>{scores[i]}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={st.zoneDe}>
+            <div style={st.deAffichage}>
+              {enTrainDeLancer ? '🎲' : dernierLancer ? FACES_DE[dernierLancer.valeur] : '🎲'}
+            </div>
+            {dernierLancer && !enTrainDeLancer && (
+              <div style={{ fontSize: 13, color: '#9a93b5', marginTop: 6 }}>
+                {noms[dernierLancer.joueur]} a fait {dernierLancer.valeur} → +{dernierLancer.points} pt{dernierLancer.points > 1 ? 's' : ''}
+              </div>
+            )}
+            <div style={{ fontWeight: 800, marginTop: 10, fontSize: 15 }}>
+              Au tour de {noms[tour]}
+            </div>
+            <button onClick={lancerDe} disabled={enTrainDeLancer} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
+              {enTrainDeLancer ? 'Lancement...' : 'Lancer le dé'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {phase === 'fini' && vainqueur !== null && (
+        <div style={st.section}>
+          <div style={st.zoneDe}>
+            <div style={{ fontSize: 48 }}>🏆</div>
+            <div style={{ fontSize: 20, fontWeight: 800, marginTop: 10 }}>{noms[vainqueur]} gagne !</div>
+            <div style={{ fontSize: 14, color: '#9a93b5', marginTop: 4 }}>Score final : {scores[vainqueur]} points</div>
+            <button onClick={rejouer} style={{ ...st.boutonPrincipal, marginTop: 18 }}>Rejouer</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const FACES_DE = { 1: '⚀', 2: '⚁', 3: '⚂', 4: '⚃', 5: '⚄', 6: '⚅' }
 
 function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour }) {
   const [compte, setCompte] = useState(calculCompte(tournoi?.date_debut))
@@ -682,6 +845,11 @@ const st = {
   avatar: { width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#FFB800,#FF4D6D)', color: '#1d1a35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, flexShrink: 0, fontSize: 13 },
   badge: { fontSize: 11, color: '#fff', borderRadius: 12, padding: '2px 8px', fontWeight: 800 },
   carteCompte: { display: 'flex', alignItems: 'center', background: '#1d1a35', borderRadius: 14, padding: 14, marginTop: 14 },
+  carteDe: { display: 'flex', alignItems: 'center', padding: '16px', borderRadius: 16, background: 'linear-gradient(135deg,#3A0CA3,#7B2CBF)', cursor: 'pointer' },
+  carteDeEmoji: { fontSize: 32 },
+  zoneDe: { display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', background: '#1d1a35', borderRadius: 16, padding: '24px 18px', marginTop: 18 },
+  deAffichage: { fontSize: 64 },
+  regleDe: { fontSize: 13, color: '#cfc9e6', background: '#1d1a35', borderRadius: 12, padding: 12, marginTop: 18, lineHeight: 1.5 },
   overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, padding: 16 },
   modal: { background: '#1d1a35', borderRadius: 20, padding: 24, width: '100%', maxWidth: 360, maxHeight: '90vh', overflowY: 'auto' },
   modalTitre: { fontSize: 16, fontWeight: 800, marginBottom: 14, textAlign: 'center' },
