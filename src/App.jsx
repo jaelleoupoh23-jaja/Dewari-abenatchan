@@ -300,7 +300,7 @@ function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour })
         )}
         {!inscritTournoi ? (
           <button onClick={onOuvrirInscription} style={st.boutonPrincipal}>
-            🏆 Je m'inscris au tournoi
+            🏆 Je m'inscris · {tournoi?.prix_inscription?.toLocaleString('fr-FR') || '30 000'} CFA
           </button>
         ) : (
           <div style={st.confirme}>✅ Tu es inscrit au tournoi !</div>
