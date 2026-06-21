@@ -291,7 +291,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
 }
 
 function PageDe({ onRetour }) {
-  const [phase, setPhase] = useState('config') // 'config' | 'jeu' | 'fini'
+  const [phase, setPhase] = useState('config')
   const [nbJoueurs, setNbJoueurs] = useState(2)
   const [noms, setNoms] = useState(['Joueur 1', 'Joueur 2', 'Joueur 3', 'Joueur 4'])
   const [scores, setScores] = useState([])
@@ -821,8 +821,8 @@ function ChatSalon({ salon, membre, onRetour }) {
 const st = {
   page: { maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: '#16142a', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' },
   barreNom: { textAlign: 'center', padding: '14px 0 0', fontWeight: 800, fontSize: 16, letterSpacing: 0.5, color: '#fff' },
-  navWrap: { display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 4px', WebkitOverflowScrolling: 'touch' },
-  navBouton: { flexShrink: 0, padding: '8px 14px', borderRadius: 20, background: '#221f3b', color: '#cfc9e6', border: 'none', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap' },
+  navWrap: { display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 4px', WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' },
+  navBouton: { flexShrink: 0, padding: '8px 14px', borderRadius: 20, background: '#221f3b', color: '#cfc9e6', border: 'none', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', scrollSnapAlign: 'start' },
   avatarGroupe: { width: 38, height: 38, borderRadius: '50%', background: 'linear-gradient(135deg,#FFB800,#FF4D6D)', color: '#1d1a35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, flexShrink: 0 },
   banniere: { height: 220, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: 20, textAlign: 'center', transition: 'background 0.6s ease' },
   bannieretEmoji: { fontSize: 48, marginBottom: 8 },
