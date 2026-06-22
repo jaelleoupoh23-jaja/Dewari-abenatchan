@@ -624,20 +624,42 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
       <text x="18" y="310" fontSize="20">🍃</text>
       <text x="285" y="310" fontSize="20">🌿</text>
 
-      {Object.entries(ZONES_BASE).map(([couleur, z]) => (
-        <rect
-          key={couleur}
-          x={z.x * CELLULE}
-          y={z.y * CELLULE}
-          width={6 * CELLULE}
-          height={6 * CELLULE}
-          fill={HEX_COULEUR[couleur]}
-          opacity={0.28}
-          rx={16}
-          stroke="#FFD700"
-          strokeWidth="1.2"
-        />
-      ))}
+{Object.entries(ZONES_BASE).map(([couleur, z]) => (
+  <g key={couleur}>
+    <rect
+      x={z.x * CELLULE + 3}
+      y={z.y * CELLULE + 3}
+      width={6 * CELLULE - 6}
+      height={6 * CELLULE - 6}
+      rx="22"
+      fill={HEX_COULEUR[couleur]}
+      opacity="0.45"
+      stroke="#FFD700"
+      strokeWidth="2"
+    />
+
+    <rect
+      x={z.x * CELLULE + 12}
+      y={z.y * CELLULE + 12}
+      width={6 * CELLULE - 24}
+      height={6 * CELLULE - 24}
+      rx="16"
+      fill="rgba(255,255,255,0.12)"
+      stroke="rgba(255,215,0,0.35)"
+      strokeWidth="1"
+    />
+
+    <text
+      x={z.x * CELLULE + 3 * CELLULE}
+      y={z.y * CELLULE + 3 * CELLULE + 6}
+      textAnchor="middle"
+      fontSize="22"
+      opacity="0.25"
+    >
+      🌴
+    </text>
+  </g>
+))}
 
       <rect x={6 * CELLULE} y={6 * CELLULE} width={3 * CELLULE} height={3 * CELLULE} fill="#1b3d22" rx={8} stroke="#FFD700" strokeWidth="1.5" />
       <text x={7.5 * CELLULE} y={7.75 * CELLULE} textAnchor="middle" fontSize="20">🌴</text>
