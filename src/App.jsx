@@ -668,14 +668,14 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
 }
 
 function PageLudo({ onRetour }) {
-  const [phase, setPhase] = useState('config')
-  const [nbJoueurs, setNbJoueurs] = useState(2)
+const [phase, setPhase] = useState('config');
+const [nbJoueurs, setNbJoueurs] = useState(2);
 const [noms, setNoms] = useState([
   nomAfricainAuto(),
   nomAfricainAuto(),
   nomAfricainAuto(),
   nomAfricainAuto()
-]) 
+]); 
   const [partie, setPartie] = useState(null)
   const [coupsDispo, setCoupsDispo] = useState([])
   const [messageTour, setMessageTour] = useState('')
