@@ -1134,7 +1134,8 @@ function ChatSalon({ salon, membre, onRetour }) {
   )
 }
 
- const st = {   page: {     maxWidth: 420,     margin: '0 auto',     minHeight: '100vh',     background: 'radial-gradient(circle at top, #3C3489 0%, #1a1530 45%, #0a0815 100%)',     fontFamily: "'Poppins', sans-serif",     display: 'flex',     flexDirection: 'column',     boxSizing: 'border-box',     color: '#fff'   }, maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: '#16142a', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' }, margin: '0 auto', minHeight: '100vh', background: '#16142a', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' },
+const st = {
+  page: { maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: 'radial-gradient(circle at top, #3C3489 0%, #1a1530 45%, #0a0815 100%)', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' },
   barreNom: { textAlign: 'center', padding: '14px 0 0', fontWeight: 800, fontSize: 16, letterSpacing: 0.5, color: '#fff' },
   navWrap: { display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 4px', WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' },
   navBouton: { flexShrink: 0, padding: '8px 14px', borderRadius: 20, background: '#221f3b', color: '#cfc9e6', border: 'none', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', scrollSnapAlign: 'start' },
