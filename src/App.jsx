@@ -419,7 +419,8 @@ function PageDe({ onRetour }) {
       const valeur = Math.floor(Math.random() * 6) + 1       const points = valeur === 6 ? 1.5 : valeur
       setValeurAffichee(valeur)
       setScores((anciens) => {
-        const nouveaux = [...anciens]
+        setScores((anciens) => {
+        const points = valeur === 6 ? 1.5 : valeur
         nouveaux[tour] = nouveaux[tour] + points
         if (nouveaux[tour] >= 10) {
           setVainqueur(tour)
