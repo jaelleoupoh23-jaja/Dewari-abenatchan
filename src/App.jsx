@@ -761,10 +761,13 @@ function PageLudo({ onRetour }) {
           </div>
 
           <div style={st.ludoPlateauWrap}>
-            <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} />
+            <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
           </div>
 
-          <div style={st.zoneDe}>
+          <div style={st.zoneDe}> 
+            <div style={st.robotBox}>
+  🤖 {messageTour || 'À moi la victoire ! Je ne plaisante pas 😄'}
+              </div>
             {messageTour && <div style={{ fontSize: 13, color: '#cfc9e6', marginBottom: 10 }}>{messageTour}</div>}
             <div style={{ fontWeight: 800, fontSize: 15 }}>
               Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
