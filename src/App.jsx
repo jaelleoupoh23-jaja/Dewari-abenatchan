@@ -59,15 +59,21 @@ const ZONES_BASE = {
   bleu: { x: 0, y: 9 },
 }
 
-const CELLULE = 22
+const DEPART_COULEUR = {   rouge: 0,   vert: 13,   jaune: 26,   bleu: 39, }
 
 function coordPion(couleur, pion, index) {
   if (pion.etat === 'base') return BASE_COORDS[couleur][index]
-  if (pion.etat === 'parcours') return CASES_PARCOURS[pion.position]
+
+  if (pion.etat === 'parcours') {
+    const depart = DEPART_COULEUR[couleur] || 0
+    const positionReelle = (depart + pion.position) % CASES_PARCOURS.length
+    return CASES_PARCOURS[positionReelle]
+  }
+
   if (pion.etat === 'couloir') return COULOIR_COORDS[couleur][pion.position]
+
   return [7, 7]
 }
-
 export default function App() {
   const [ecran, setEcran] = useState('accueil')
   const [session, setSession] = useState(null)
