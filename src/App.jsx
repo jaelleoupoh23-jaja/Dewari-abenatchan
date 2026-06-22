@@ -597,8 +597,33 @@ const points = valeur === 6 ? 1.5 : valeur
 function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
   const couleurCourante = partie.couleurs[partie.tourActuel]
 
+  const animalPion = {
+    rouge: '🦁',
+    vert: '🐆',
+    jaune: '🦅',
+    bleu: '🐘',
+  }
+
   return (
     <svg viewBox="0 0 330 330" style={st.ludoSvg}>
+      <defs>
+        <radialGradient id="jungleFond" cx="50%" cy="50%" r="75%">
+          <stop offset="0%" stopColor="#2f7d32" />
+          <stop offset="55%" stopColor="#174c25" />
+          <stop offset="100%" stopColor="#071b0d" />
+        </radialGradient>
+
+        <filter id="ombrePion" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2" floodColor="#000" floodOpacity="0.6" />
+        </filter>
+      </defs>
+
+      <rect x="0" y="0" width="330" height="330" rx="24" fill="url(#jungleFond)" />
+      <text x="25" y="28" fontSize="20">🌿</text>
+      <text x="285" y="30" fontSize="20">🌴</text>
+      <text x="18" y="310" fontSize="20">🍃</text>
+      <text x="285" y="310" fontSize="20">🌿</text>
+
       {Object.entries(ZONES_BASE).map(([couleur, z]) => (
         <rect
           key={couleur}
@@ -607,13 +632,15 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
           width={6 * CELLULE}
           height={6 * CELLULE}
           fill={HEX_COULEUR[couleur]}
-          opacity={0.18}
-          rx={10}
+          opacity={0.28}
+          rx={16}
+          stroke="#FFD700"
+          strokeWidth="1.2"
         />
       ))}
 
-      <rect x={6 * CELLULE} y={6 * CELLULE} width={3 * CELLULE} height={3 * CELLULE} fill="#2a2050" rx={6} />
-      <text x={7.5 * CELLULE} y={7.7 * CELLULE} textAnchor="middle" fontSize="16">🏆</text>
+      <rect x={6 * CELLULE} y={6 * CELLULE} width={3 * CELLULE} height={3 * CELLULE} fill="#1b3d22" rx={8} stroke="#FFD700" strokeWidth="1.5" />
+      <text x={7.5 * CELLULE} y={7.75 * CELLULE} textAnchor="middle" fontSize="20">🌴</text>
 
       {Object.entries(COULOIR_COORDS).map(([couleur, cases]) =>
         cases.map(([r, c], i) => (
@@ -624,9 +651,9 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
             width={CELLULE}
             height={CELLULE}
             fill={HEX_COULEUR[couleur]}
-            opacity={0.5}
-            stroke="#16142a"
-            strokeWidth={0.5}
+            opacity={0.75}
+            stroke="#0b1b0f"
+            strokeWidth={0.7}
           />
         ))
       )}
@@ -638,9 +665,9 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
           y={r * CELLULE}
           width={CELLULE}
           height={CELLULE}
-          fill={estCaseSecurisee(i) ? '#FFE08A' : '#f4f2fb'}
-          stroke="#16142a"
-          strokeWidth={0.5}
+          fill={estCaseSecurisee(i) ? '#FFD86B' : '#f7fff0'}
+          stroke="#244126"
+          strokeWidth={0.6}
         />
       ))}
 
@@ -657,13 +684,39 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
               key={`${couleur}-${index}`}
               onClick={() => jouable && onJouerPion(index)}
               style={{ cursor: jouable ? 'pointer' : 'default' }}
+              filter="url(#ombrePion)"
             >
               {jouable && (
-                <circle cx={cx} cy={cy} r={CELLULE / 2.1} fill="none" stroke="#fff" strokeWidth={2}>
-                  <animate attributeName="r" values={`${CELLULE / 2.6};${CELLULE / 1.9};${CELLULE / 2.6}`} dur="1s" repeatCount="indefinite" />
+                <circle cx={cx} cy={cy} r={CELLULE / 1.9} fill="none" stroke="#FFD700" strokeWidth={2}>
+                  <animate attributeName="r" values={`${CELLULE / 2.4};${CELLULE / 1.7};${CELLULE / 2.4}`} dur="1s" repeatCount="indefinite" />
                 </circle>
               )}
-              <circle cx={cx} cy={cy} r={CELLULE / 2.8} fill={HEX_COULEUR[couleur]} stroke="#16142a" strokeWidth={1.5} />
+
+              <circle
+                cx={cx}
+                cy={cy}
+                r={CELLULE / 2.15}
+                fill={HEX_COULEUR[couleur]}
+                stroke="#FFD700"
+                strokeWidth="2"
+              />
+
+              <circle
+                cx={cx - 4}
+                cy={cy - 5}
+                r={CELLULE / 7}
+                fill="rgba(255,255,255,0.65)"
+              />
+
+              <text
+                x={cx}
+                y={cy + 5}
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="900"
+              >
+                {animalPion[couleur]}
+              </text>
             </g>
           )
         })
