@@ -408,7 +408,7 @@ function PageDe({ onRetour }) {
     }, 80)
     setTimeout(() => {
       clearInterval(intervalleRef.current)
-     const valeur = Math.floor(Math.random() * 6) + 1
+  const valeur = Math.floor(Math.random() * 6) + 1
 const points = valeur === 6 ? 1.5 : valeur
       setValeurAffichee(valeur)
       setScores((anciens) => {
@@ -776,7 +776,7 @@ function PageLudo({ onRetour }) {
       )}
     </div>
   )
-} function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour }) {
+}  function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour }) {
   const [compte, setCompte] = useState(calculCompte(tournoi?.date_debut))
 
   useEffect(() => {
