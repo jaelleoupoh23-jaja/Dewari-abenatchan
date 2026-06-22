@@ -683,7 +683,7 @@ function PageLudo({ onRetour }) {
     <div style={st.page}>
       <div style={st.enteteChat}>
         <button onClick={onRetour} style={st.retour}>←</button>
-        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Ludo</span>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Déwari</span>
       </div>
 
       {phase === 'config' && (
