@@ -317,7 +317,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
         <div onClick={onOuvrirLudo} style={st.carteLudo}>
           <div style={st.carteDeEmoji}>♟️</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Ludo</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dewari</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · règles classiques</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
