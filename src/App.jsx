@@ -432,7 +432,7 @@ function FaceDe({ valeur, enTrain }) {
 function PageDe({ onRetour }) {
   const [phase, setPhase] = useState('config')
   const [nbJoueurs, setNbJoueurs] = useState(2)
-  const [noms, setNoms] = const [noms, setNoms] = useState([   nomAfricainAuto(),   nomAfricainAuto(),   nomAfricainAuto(),   nomAfricainAuto() ])
+ const [noms, setNoms] = useState([nomAfricainAuto(), nomAfricainAuto(), nomAfricainAuto(), nomAfricainAuto()])
   const [scores, setScores] = useState([])
   const [tour, setTour] = useState(0)
   const [valeurAffichee, setValeurAffichee] = useState(1)
