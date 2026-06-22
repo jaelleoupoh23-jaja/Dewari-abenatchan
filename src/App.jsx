@@ -519,7 +519,7 @@ const points = valeur === 6 ? 1.5 : valeur
               Au tour de {noms[tour]}
             </div>
             <button onClick={lancerDe} disabled={enTrainDeLancer} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
-              {enTrainDeLancer ? 'Lancement...' : '🎲 Lancer le Déwari'}
+              {enTrainDeLancer ? '🎲 Déwari tourne...' : '🎲 Lancer le Déwari'}
             </button>
           </div>
         </div>
