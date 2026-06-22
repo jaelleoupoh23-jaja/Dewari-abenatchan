@@ -59,7 +59,14 @@ const ZONES_BASE = {
   bleu: { x: 0, y: 9 },
 }
 
-const DEPART_COULEUR = {   rouge: 0,   vert: 13,   jaune: 26,   bleu: 39, }
+const CELLULE = 22
+
+const DEPART_COULEUR = {
+  rouge: 0,
+  vert: 13,
+  jaune: 26,
+  bleu: 39,
+}
 
 function coordPion(couleur, pion, index) {
   if (pion.etat === 'base') return BASE_COORDS[couleur][index]
