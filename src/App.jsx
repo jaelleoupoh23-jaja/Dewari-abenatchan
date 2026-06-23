@@ -761,7 +761,7 @@ const totem = {
         strokeWidth="2"
         filter="url(#lumiereOr)"
       />
-      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     {dernierDe ? faceDe(dernierDe) : '🎲'}   </button> </foreignObject>
+      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     {dernierDe ? ({1:'⚀',2:'⚁',3:'⚂',4:'⚃',5:'⚄',6:'⚅'}[dernierDe] || '🎲') : '🎲'}   </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
