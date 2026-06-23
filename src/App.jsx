@@ -954,65 +954,80 @@ const [noms, setNoms] = useState([
         </div>
       )}
 
-      {phase === 'jeu' && partie && (
-        <div style={st.section}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-            {partie.couleurs.map((couleur, i) => (
-              <div
-                key={couleur}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 14,
-                  background: i === partie.tourActuel ? '#2a2050' : '#1d1a35',
-                  border: i === partie.tourActuel ? `1px solid ${HEX_COULEUR[couleur]}` : 'none',
-                }}
-              >
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: HEX_COULEUR[couleur] }} />
-                <span style={{ fontSize: 12, fontWeight: 700 }}>{noms[i]}</span>
-              </div>
-            ))}
+    {phase === 'jeu' && partie && (
+  <div style={st.section}>
+
+    <div style={{ display:'grid', gridTemplateColumns: partie.couleurs.length === 2 ? '1fr 1fr' : '1fr 1fr', gap:12, marginBottom:14 }}>
+      {partie.couleurs.map((couleur, i) => {
+        const actif = i === indexCourant
+        const peutLancer = actif && coupsDispo.length === 0
+
+        return (
+          <div
+            key={couleur}
+            style={{
+              background: actif ? '#24135f' : '#12142f',
+              border: `2px solid ${HEX_COULEUR[couleur]}`,
+              borderRadius: 18,
+              padding: 10,
+              color: '#fff',
+              textAlign: 'center',
+              boxShadow: actif ? `0 0 18px ${HEX_COULEUR[couleur]}` : 'none'
+            }}
+          >
+            <div style={{ fontWeight:900, color:HEX_COULEUR[couleur], marginBottom:6 }}>
+              {noms[i]}
+            </div>
+
+            <button
+              onClick={peutLancer ? lancer : undefined}
+              disabled={!peutLancer}
+              style={{
+                width: 62,
+                height: 62,
+                borderRadius: 16,
+                border: `3px solid ${HEX_COULEUR[couleur]}`,
+                background: actif ? '#fff' : '#d8d8d8',
+                fontSize: 34,
+                cursor: peutLancer ? 'pointer' : 'default',
+                boxShadow: actif ? `0 0 16px ${HEX_COULEUR[couleur]}` : '0 6px 12px rgba(0,0,0,.35)',
+                transform: actif ? 'scale(1.05)' : 'scale(.92)',
+                transition: '0.25s'
+              }}
+            >
+              {actif && partie.dernierDe ? partie.dernierDe : '🎲'}
+            </button>
+
+            <div style={{ fontSize:11, marginTop:6, opacity:.8 }}>
+              {actif ? (coupsDispo.length > 0 ? 'Choisis un pion' : 'Appuie sur ton dé') : 'En attente'}
+            </div>
           </div>
-<div style={{ display:'flex', gap:10, marginBottom:10 }}>
-  {partie.couleurs.map((couleur, i) => (
-    <div
-      key={couleur}
-      style={{
-        flex:1,
-        background:i===indexCourant ? '#24135f' : '#12142f',
-        border:`2px solid ${HEX_COULEUR[couleur]}`,
-        borderRadius:16,
-        padding:10,
-        textAlign:'center',
-        color:'#fff'
-      }}
-    >
-      <div style={{fontWeight:900,color:HEX_COULEUR[couleur]}}>
-        {noms[i]}
+        )
+      })}
+    </div>
+
+    <div style={st.ludoPlateauWrap}>
+      <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
+    </div>
+
+    <div style={st.zoneDe}>
+      <div style={st.robotBox}>
+        🤖 {messageTour || 'À moi la victoire ! Je ne plaisante pas 😄'}
       </div>
 
-      <div style={{fontSize:34}}>
-        {i===indexCourant ? (partie.dernierDe || '🎲') : '🎲'}
+      {messageTour && <div style={{ fontSize: 13, color: '#cfc9e6', marginBottom: 10 }}>{messageTour}</div>}
+
+      <div style={{ fontWeight: 800, fontSize: 15 }}>
+        Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
+      </div>
+
+      <div style={{ fontSize: 13, color: '#cfc9e6', marginTop: 8 }}>
+        {coupsDispo.length > 0 ? 'Choisis ton pion sur le plateau.' : 'Appuie sur ton dé pour lancer.'}
       </div>
     </div>
-  ))}
-</div>
-          <div style={st.ludoPlateauWrap}>
-            <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
-          </div>
 
-          <div style={st.zoneDe}> 
-            <div style={st.robotBox}>
-  🤖 {messageTour || 'À moi la victoire ! Je ne plaisante pas 😄'}
-              </div>
-            {messageTour && <div style={{ fontSize: 13, color: '#cfc9e6', marginBottom: 10 }}>{messageTour}</div>}
-            <div style={{ fontWeight: 800, fontSize: 15 }}>
-              Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
-            </div>
-            <button onClick={lancer} disabled={coupsDispo.length > 0} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
-              {coupsDispo.length > 0 ? 'Choisis un pion sur le plateau' : '🎲 Lancer le Déwari'}
-            </button>
-          </div>
-        </div>
-      )}
+  </div>
+)}
 
       {phase === 'fini' && partie?.vainqueur && (
         <div style={st.section}>
