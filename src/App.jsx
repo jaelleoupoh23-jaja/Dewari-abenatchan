@@ -1003,10 +1003,6 @@ function BarreChatCadeaux() {
     alert('Erreur envoi message')
     console.error(error)
     return
-  }
-
-  setMessages([...messages, { texte: message, type: 'message' }])
-  setMessage('')
 }
     if (!message.trim()) return
     setMessages([...messages, { texte: message, type: 'message' }])
