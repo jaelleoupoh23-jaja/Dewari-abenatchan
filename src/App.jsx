@@ -599,7 +599,7 @@ const points = valeur === 6 ? 1.5 : valeur
   )
 }
 
-function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
+function PlateauLudo({ partie, coupsDispo, onJouerPion, dernierDe, couleurCourante, deBouge, onLancer }) {
   const couleurCourante = partie.couleurs[partie.tourActuel]
 
   const couleursAffichees =
@@ -762,7 +762,7 @@ const totem = {
         strokeWidth="2"
         filter="url(#lumiereOr)"
       />
-      <text x={7.5 * CELLULE} y={7.8 * CELLULE} textAnchor="middle" fontSize="22">👑</text>
+      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     {dernierDe ? faceDe(dernierDe) : '🎲'}   </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
@@ -1039,7 +1039,15 @@ function lancerAvecAnimation() {
 </div>
 
     <div style={st.ludoPlateauWrap}>
-      <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
+    <PlateauLudo
+  partie={partie}
+  coupsDispo={coupsDispo}
+  onJouerPion={jouerPion}
+  dernierDe={partie.dernierDe}
+  couleurCourante={couleurCourante}
+  deBouge={deBouge}
+  onLancer={lancerAvecAnimation}
+/>
     </div>
 
     <div style={st.zoneDe}>
@@ -1047,7 +1055,6 @@ function lancerAvecAnimation() {
         🤖 {messageTour || 'À moi la victoire ! Je ne plaisante pas 😄'}
       </div>
 
-      {messageTour && <div style={{ fontSize: 13, color: '#cfc9e6', marginBottom: 10 }}>{messageTour}</div>}
 
       <div style={{ fontWeight: 800, fontSize: 15 }}>
         Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
