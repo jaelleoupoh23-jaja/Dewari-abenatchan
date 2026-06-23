@@ -820,7 +820,9 @@ const [noms, setNoms] = useState([
   const [messageTour, setMessageTour] = useState('')
 
   function demarrer() {
-    const couleursActives = COULEURS_LUDO.slice(0, nbJoueurs)
+   const couleursActives = nbJoueurs === 2
+  ? ['rouge', 'jaune']
+  : COULEURS_LUDO.slice(0, nbJoueurs)
     setPartie(creerPartie(couleursActives))
     setCoupsDispo([])
     setMessageTour('')
