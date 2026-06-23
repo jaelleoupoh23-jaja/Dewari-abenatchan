@@ -767,9 +767,24 @@ const totem = {
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
           const [r, c] = coordPion(couleur, pion, index)
-          const decalage = pion.etat === 'arrivee' || pion.etat === 'parcours' ? (index % 4) * 3 : 0
-          const cx = c * CELLULE + CELLULE / 2 + decalage
-          const cy = r * CELLULE + CELLULE / 2 + decalage
+        const offsets = [
+  [0, 0],
+  [-4, -4],
+  [4, -4],
+  [-4, 4],
+  [4, 4],
+]
+
+const memeCase = partie.pions[couleur].filter((p, i) => {
+  const [rr, cc] = coordPion(couleur, p, i)
+  return rr === r && cc === c && p.etat !== 'base'
+})
+
+const rangPile = memeCase.findIndex((p) => p === pion)
+const [dx, dy] = pion.etat === 'base' ? [0, 0] : offsets[rangPile] || [0, 0]
+
+const cx = c * CELLULE + CELLULE / 2 + dx
+const cy = r * CELLULE + CELLULE / 2 + dy
           const jouable = couleur === couleurCourante && coupsDispo.some((cp) => cp.index === index)
 
           return (
