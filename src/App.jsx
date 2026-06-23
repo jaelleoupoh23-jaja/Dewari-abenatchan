@@ -991,22 +991,6 @@ function lancerAvecAnimation() {
     </div>
   </div>
 )}
-      <div style={st.robotBox}>
-        🤖 {messageTour || 'À moi la victoire ! Je ne plaisante pas 😄'}
-      </div>
-
-
-      <div style={{ fontWeight: 800, fontSize: 15 }}>
-        Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
-      </div>
-
-      <div style={{ fontSize: 13, color: '#cfc9e6', marginTop: 8 }}>
-        {coupsDispo.length > 0 ? 'Choisis ton pion sur le plateau.' : 'Appuie sur ton dé pour lancer.'}
-      </div>
-    </div>
-
-  </div>
-)}
 
       {phase === 'fini' && partie?.vainqueur && (
         <div style={st.section}>
