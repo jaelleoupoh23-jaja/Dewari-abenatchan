@@ -667,8 +667,11 @@ const totem = {
       <text x="18" y="309" fontSize="22">🍃</text>
       <text x="286" y="310" fontSize="22">🌿</text>
 
-  {couleursAffichees.map((couleur) => (
-  <g key={couleur} filter="url(#ombreFort)">
+{couleursAffichees.map((couleur) => {
+  const z = ZONES_BASE[couleur]
+
+  return (
+    <g key={couleur} filter="url(#ombreFort)">
           <rect
             x={z.x * CELLULE + 2}
             y={z.y * CELLULE + 2}
@@ -713,8 +716,9 @@ const totem = {
           >
             {zoneLabel[couleur]}
           </text>
-        </g>
-      ))}
+       </g>
+  )
+})}
 
       {CASES_PARCOURS.map(([r, c], i) => (
         <rect
