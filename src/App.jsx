@@ -971,7 +971,30 @@ const [noms, setNoms] = useState([
               </div>
             ))}
           </div>
+<div style={{ display:'flex', gap:10, marginBottom:10 }}>
+  {partie.couleurs.map((couleur, i) => (
+    <div
+      key={couleur}
+      style={{
+        flex:1,
+        background:i===indexCourant ? '#24135f' : '#12142f',
+        border:`2px solid ${HEX_COULEUR[couleur]}`,
+        borderRadius:16,
+        padding:10,
+        textAlign:'center',
+        color:'#fff'
+      }}
+    >
+      <div style={{fontWeight:900,color:HEX_COULEUR[couleur]}}>
+        {noms[i]}
+      </div>
 
+      <div style={{fontSize:34}}>
+        {i===indexCourant ? (partie.dernierDe || '🎲') : '🎲'}
+      </div>
+    </div>
+  ))}
+</div>
           <div style={st.ludoPlateauWrap}>
             <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
           </div>
