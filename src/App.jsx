@@ -980,54 +980,63 @@ function lancerAvecAnimation() {
     {phase === 'jeu' && partie && (
   <div style={st.section}>
 
-    <div style={{ display:'grid', gridTemplateColumns: partie.couleurs.length === 2 ? '1fr 1fr' : '1fr 1fr', gap:12, marginBottom:14 }}>
-      {partie.couleurs.map((couleur, i) => {
-        const actif = i === indexCourant
-        const peutLancer = actif && coupsDispo.length === 0
+   <div style={{
+  display:'grid',
+  gridTemplateColumns:'1fr 1fr',
+  gap:12,
+  marginBottom:12
+}}>
+  {partie.couleurs.map((couleur, i) => {
+    const actif = i === indexCourant
 
-        return (
-          <div
-            key={couleur}
-            style={{
-              background: actif ? '#24135f' : '#12142f',
-              border: `2px solid ${HEX_COULEUR[couleur]}`,
-              borderRadius: 18,
-              padding: 10,
-              color: '#fff',
-              textAlign: 'center',
-              boxShadow: actif ? `0 0 18px ${HEX_COULEUR[couleur]}` : 'none'
-            }}
-          >
-            <div style={{ fontWeight:900, color:HEX_COULEUR[couleur], marginBottom:6 }}>
-              {noms[i]}
-            </div>
+    return (
+      <div
+        key={couleur}
+        style={{
+          background: actif ? '#24135f' : '#12142f',
+          border: `2px solid ${HEX_COULEUR[couleur]}`,
+          borderRadius: 18,
+          padding: 10,
+          color: '#fff',
+          textAlign: 'center',
+          boxShadow: actif ? `0 0 18px ${HEX_COULEUR[couleur]}` : 'none'
+        }}
+      >
+        <div style={{ fontWeight:900, color:HEX_COULEUR[couleur], fontSize:16 }}>
+          {noms[i]}
+        </div>
 
-            <button
-            onClick={peutLancer ? lancerAvecAnimation : undefined}
-              disabled={!peutLancer}
-              style={{
-                width: 62,
-                height: 62,
-                borderRadius: 16,
-                border: `3px solid ${HEX_COULEUR[couleur]}`,
-                background: actif ? '#fff' : '#d8d8d8',
-                fontSize: 34,
-                cursor: peutLancer ? 'pointer' : 'default',
-                boxShadow: actif ? `0 0 16px ${HEX_COULEUR[couleur]}` : '0 6px 12px rgba(0,0,0,.35)',
-                transform: actif ? 'scale(1.05)' : 'scale(.92)',
-                transition: '0.25s',animation: deBouge && actif ? 'dewariDeTourne .65s ease-in-out' : 'none'
-              }}
-            >
-              {actif && partie.dernierDe ? faceDe(partie.dernierDe) : '🎲'}
-            </button>
+        <div style={{ fontSize:12, marginTop:6, opacity:.8 }}>
+          {actif ? 'À ton tour' : 'En attente'}
+        </div>
+      </div>
+    )
+  })}
+</div>
 
-            <div style={{ fontSize:11, marginTop:6, opacity:.8 }}>
-              {actif ? (coupsDispo.length > 0 ? 'Choisis un pion' : 'Appuie sur ton dé') : 'En attente'}
-            </div>
-          </div>
-        )
-      })}
-    </div>
+<div style={{
+  display:'flex',
+  justifyContent:'center',
+  margin:'8px 0 14px'
+}}>
+  <button
+    onClick={coupsDispo.length === 0 ? lancerAvecAnimation : undefined}
+    disabled={coupsDispo.length > 0 || deBouge}
+    style={{
+      width:76,
+      height:76,
+      borderRadius:20,
+      border:`4px solid ${HEX_COULEUR[couleurCourante]}`,
+      background:'#fff',
+      fontSize:42,
+      cursor: coupsDispo.length === 0 ? 'pointer' : 'default',
+      boxShadow:`0 0 22px ${HEX_COULEUR[couleurCourante]}`,
+      animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'
+    }}
+  >
+    {partie.dernierDe ? faceDe(partie.dernierDe) : '🎲'}
+  </button>
+</div>
 
     <div style={st.ludoPlateauWrap}>
       <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} dernierDe={partie.dernierDe} />
