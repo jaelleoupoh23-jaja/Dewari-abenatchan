@@ -975,24 +975,59 @@ height:30,
   )
 }
 
-function BarreChatCadeaux() { 
-  const [reaction, setReaction] = useState('')
-  const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤']
-  const cadeaux = [
-    ['🍌','Banane','300'],
-    ['🥤','Jus Bissap','400'],
-    ['☕','Café Touba','500'],
-    ['🍵','Thé Ataya','400'],
-    ['🥁','Tam-tam','700'],
-    ['🦁','Lion','1,000'],
-    ['🐘','Éléphant','1,500'],
-    ['👑','Couronne','2,000'],
-    ['💎','Diamant','5,000'],
-    ['⚔️','Attaque','600']
-  ]
+function BarreChatCadeaux() {
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+  const [reaction, setReaction] = useState(null)
+  const [emojiOuvert, setEmojiOuvert] = useState(false)
+
+  const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤','❤️','👏🏿','🤣']
+
+  const envoyerMessage = () => {
+    if (!message.trim()) return
+    setMessages([...messages, { texte: message, type: 'message' }])
+    setMessage('')
+  }
+
+  const envoyerReaction = (emoji) => {
+    setReaction(emoji)
+    setMessages([...messages, { texte: emoji, type: 'emoji' }])
+    setEmojiOuvert(false)
+
+    setTimeout(() => {
+      setReaction(null)
+    }, 1200)
+  }
 
   return (
-    <div style={{  marginTop:4 }}>
+    <div style={{ marginTop:4, position:'relative' }}>
+
+      {reaction && (
+        <div style={{
+          position:'fixed',
+          left:'50%',
+          top:'50%',
+          transform:'translate(-50%,-50%)',
+          fontSize:120,
+          zIndex:999999999,
+          pointerEvents:'none'
+        }}>
+          {reaction}
+        </div>
+      )}
+
+      <div style={{
+        maxHeight:90,
+        overflowY:'auto',
+        marginBottom:6,
+        color:'#fff',
+        fontSize:13
+      }}>
+        {messages.map((m, i) => (
+          <div key={i}>💬 {m.texte}</div>
+        ))}
+      </div>
+
       <div style={{
         display:'flex',
         alignItems:'center',
@@ -1002,90 +1037,75 @@ function BarreChatCadeaux() {
         borderRadius:22,
         padding:8
       }}>
-        <button style={{ fontSize:22, background:'transparent', border:0 }}>💬</button>
-        <div style={{ flex:1, opacity:.65 }}>Tape ton message...</div>
-        <button   type="button"   onClick={() => alert('emoji ouvert')}   style={{ fontSize:22, background:'transparent', border:0, cursor:'pointer' }} >   😊 </button>
-        <button style={{ fontSize:22, background:'transparent', border:0 }}>🎤</button>
+        <button type="button" style={{ fontSize:22, background:'transparent', border:0 }}>💬</button>
+
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') envoyerMessage()
+          }}
+          placeholder="Tape ton message..."
+          style={{
+            flex:1,
+            background:'transparent',
+            border:0,
+            color:'#fff',
+            outline:'none'
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => setEmojiOuvert(!emojiOuvert)}
+          style={{ fontSize:24, background:'transparent', border:0, cursor:'pointer' }}
+        >
+          😊
+        </button>
+
+        <button
+          type="button"
+          onClick={envoyerMessage}
+          style={{ fontSize:22, background:'transparent', border:0, cursor:'pointer' }}
+        >
+          🎤
+        </button>
       </div>
 
-    <div style={{
-  display:'flex',
-  gap:6,
- overflowX:'visible', 
-  flexWrap:'wrap',
-  padding:'8px 0',
-  position:'relative',
-  zIndex:9999,
-  pointerEvents:'auto'
-}}>
-{emojis.map((e) => (
-  <div
-    key={e}
-    onClick={() => {
-      alert(e)
-      setReaction(e)
-    }}
-    style={{
-      minWidth:48,
-      height:44,
-      borderRadius:12,
-      background:'#102442',
-      border:'1px solid rgba(255,255,255,.12)',
-      fontSize:24,
-      display:'flex',
-      alignItems:'center',
-      justifyContent:'center',
-      cursor:'pointer'
-    }}
-  >
-    {e}
-  </div>
-))}
-      </div>
-{reaction && (
-  <div
-    style={{
-      position:'fixed',
-      left:'50%',
-      top:'50%',
-      transform:'translate(-50%,-50%)',
-      fontSize:'120px',
-      zIndex:999999999,
-      pointerEvents:'none'
-    }}
-  >
-    {reaction}
-  </div>
-)}
-      <div style={{
-        display:'grid',
-        gridTemplateColumns:'repeat(2, 1fr)',
-        gap:8
-      }}>
-        {cadeaux.map(([emoji, nom, prix]) => (
-          <button key={nom} style={{
-            display:'flex',
-            alignItems:'center',
-            gap:8,
-            padding:10,
-            borderRadius:14,
-            border:'1px solid rgba(255,215,0,.35)',
-            background:'linear-gradient(135deg,#073b3f,#0d2538)',
-            color:'#fff',
-            fontWeight:800
-          }}>
-            <span style={{ fontSize:28 }}>{emoji}</span>
-            <span style={{ textAlign:'left' }}>
-              <div>{nom}</div>
-              <div style={{ color:'#ffd700', fontSize:13 }}>🪙 {prix}</div>
-            </span>
-          </button>
-        ))}
-      </div>
+      {emojiOuvert && (
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:'repeat(6, 1fr)',
+          gap:6,
+          marginTop:8,
+          background:'#071827',
+          border:'1px solid rgba(255,215,0,.35)',
+          borderRadius:14,
+          padding:8,
+          zIndex:99999
+        }}>
+          {emojis.map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => envoyerReaction(emoji)}
+              style={{
+                height:40,
+                borderRadius:10,
+                border:'1px solid rgba(255,255,255,.15)',
+                background:'#102442',
+                fontSize:22,
+                cursor:'pointer'
+              }}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
-
 function PageLudo({ onRetour }) {
 const [phase, setPhase] = useState('config');
 const [nbJoueurs, setNbJoueurs] = useState(2);
