@@ -1000,7 +1000,12 @@ function BarreChatCadeaux() {
   }
 
   return (
-    <div style={{ marginTop:4, position:'relative' }}>
+    <div style={{
+  marginTop:4,
+  position:'relative',
+  zIndex:999999,
+  pointerEvents:'auto'
+}}>
 
       {reaction && (
         <div style={{
@@ -1016,27 +1021,18 @@ function BarreChatCadeaux() {
         </div>
       )}
 
-      <div style={{
-        maxHeight:90,
-        overflowY:'auto',
-        marginBottom:6,
-        color:'#fff',
-        fontSize:13
-      }}>
-        {messages.map((m, i) => (
-          <div key={i}>💬 {m.texte}</div>
-        ))}
-      </div>
-
-      <div style={{
-        display:'flex',
-        alignItems:'center',
-        gap:8,
-        background:'#081628',
-        border:'1px solid rgba(255,255,255,.12)',
-        borderRadius:22,
-        padding:8
-      }}>
+     <div style={{
+  display:'flex',
+  alignItems:'center',
+  gap:8,
+  background:'#081628',
+  border:'1px solid rgba(255,255,255,.12)',
+  borderRadius:22,
+  padding:8,
+  position:'relative',
+  zIndex:999999,
+  pointerEvents:'auto'
+}}>
         <button type="button" style={{ fontSize:22, background:'transparent', border:0 }}>💬</button>
 
         <input
