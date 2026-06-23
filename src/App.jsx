@@ -1021,10 +1021,18 @@ function BarreChatCadeaux() {
          <button
   key={e}
   type="button"
-  onClick={() => {
-    alert(e)
-    setReaction(e)
-  }}
+  onMouseDown={(ev) => {
+  ev.preventDefault()
+  ev.stopPropagation()
+  alert(e)
+  setReaction(e)
+}}
+onTouchStart={(ev) => {
+  ev.preventDefault()
+  ev.stopPropagation()
+  alert(e)
+  setReaction(e)
+}}
   style={{
     minWidth:48,
     height:44,
