@@ -1008,12 +1008,15 @@ function BarreChatCadeaux() {
         <button style={{ fontSize:22, background:'transparent', border:0 }}>🎤</button>
       </div>
 
-      <div style={{
-        display:'flex',
-        gap:6,
-        overflowX:'auto',
-        padding:'8px 0'
-      }}>
+    <div style={{
+  display:'flex',
+  gap:6,
+  overflowX:'auto',
+  padding:'8px 0',
+  position:'relative',
+  zIndex:9999,
+  pointerEvents:'auto'
+}}>
         {emojis.map((e) => (
          <button
   key={e}
@@ -1030,7 +1033,9 @@ function BarreChatCadeaux() {
     border:'1px solid rgba(255,255,255,.12)',
     fontSize:24,
     cursor:'pointer',
-    zIndex:10
+   position:'relative',
+zIndex:10000,
+pointerEvents:'auto'
   }}
 >
   {e}
