@@ -1004,7 +1004,7 @@ function BarreChatCadeaux() {
       }}>
         <button style={{ fontSize:22, background:'transparent', border:0 }}>💬</button>
         <div style={{ flex:1, opacity:.65 }}>Tape ton message...</div>
-        <button style={{ fontSize:22, background:'transparent', border:0 }}>😊</button>
+        <button   type="button"   onClick={() => alert('emoji ouvert')}   style={{ fontSize:22, background:'transparent', border:0, cursor:'pointer' }} >   😊 </button>
         <button style={{ fontSize:22, background:'transparent', border:0 }}>🎤</button>
       </div>
 
