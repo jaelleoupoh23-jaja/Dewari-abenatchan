@@ -983,7 +983,31 @@ function BarreChatCadeaux() {
 
   const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤','❤️','👏🏿','🤣']
 
-  const envoyerMessage = () => {
+  const envoyerMessage = async () => {
+  if (!message.trim()) return
+
+  const nouveauMessage = {
+    partie_id: 'partie-test',
+    auteur_id: 'joueur-test',
+    pseudo: 'Moi',
+    role: 'joueur',
+    type: 'message',
+    contenu: message
+  }
+
+  const { error } = await supabase
+    .from('messages_partie')
+    .insert([nouveauMessage])
+
+  if (error) {
+    alert('Erreur envoi message')
+    console.error(error)
+    return
+  }
+
+  setMessages([...messages, { texte: message, type: 'message' }])
+  setMessage('')
+}
     if (!message.trim()) return
     setMessages([...messages, { texte: message, type: 'message' }])
     setMessage('')
