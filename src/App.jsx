@@ -1000,7 +1000,7 @@ function BarreChatCadeaux() {
     .insert([nouveauMessage])
 
   if (error) {
-    alert('Erreur envoi message')
+    alert(JSON.stringify(error))
     console.error(error)
     return
 }
