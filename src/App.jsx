@@ -667,8 +667,8 @@ const totem = {
       <text x="18" y="309" fontSize="22">🍃</text>
       <text x="286" y="310" fontSize="22">🌿</text>
 
-      {couleursAffichees.map(couleur =>.map(([couleur, z]) => (
-        <g key={couleur} filter="url(#ombreFort)">
+  {couleursAffichees.map((couleur) => (
+  <g key={couleur} filter="url(#ombreFort)">
           <rect
             x={z.x * CELLULE + 2}
             y={z.y * CELLULE + 2}
