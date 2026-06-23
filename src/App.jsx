@@ -761,7 +761,15 @@ const totem = {
         strokeWidth="2"
         filter="url(#lumiereOr)"
       />
-      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     {dernierDe ? ({1:'⚀',2:'⚁',3:'⚂',4:'⚃',5:'⚄',6:'⚅'}[dernierDe] || '🎲') : '🎲'}   </button> </foreignObject>
+      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     <span style={{
+  display:'block',
+  color:'#111',
+  fontWeight:900,
+  fontSize:34,
+  lineHeight:'1'
+}}>
+  {dernierDe || '🎲'}
+</span>  </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
@@ -914,13 +922,11 @@ function CarteJoueurPro({ joueur }) {
       display:'flex',
       alignItems:'center',
     gap:5,
-      background: joueur.actif
-        ? `linear-gradient(135deg,${HEX_COULEUR[joueur.couleur]},#111936)`
-        : '#101936',
-      border:`2px solid ${HEX_COULEUR[joueur.couleur]}`,
-     borderRadius:12,
-padding:5,
-      boxShadow: joueur.actif ? `0 0 18px ${HEX_COULEUR[joueur.couleur]}` : '0 8px 18px rgba(0,0,0,.35)'
+     background:'transparent',
+border:'none',
+borderRadius:0,
+padding:0,
+boxShadow:'none'
     }}>
       <div style={{
        width:32,
@@ -969,7 +975,8 @@ height:30,
   )
 }
 
-function BarreChatCadeaux() {
+function BarreChatCadeaux() { 
+  const [reaction, setReaction] = useState('')
   const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤']
   const cadeaux = [
     ['🍌','Banane','300'],
@@ -985,7 +992,7 @@ function BarreChatCadeaux() {
   ]
 
   return (
-    <div style={{ marginTop:8 }}>
+    <div style={{  marginTop:4 }}>
       <div style={{
         display:'flex',
         alignItems:'center',
@@ -1008,7 +1015,7 @@ function BarreChatCadeaux() {
         padding:'8px 0'
       }}>
         {emojis.map((e) => (
-          <button key={e} style={{
+          <button   key={e}   onClick={() => setReaction(`${e} réaction envoyée`)}   style={{
             minWidth:48,
             height:44,
             borderRadius:12,
@@ -1020,7 +1027,16 @@ function BarreChatCadeaux() {
           </button>
         ))}
       </div>
-
+{reaction && (
+  <div style={{
+    marginTop:6,
+    textAlign:'center',
+    fontWeight:800,
+    color:'#ffd700'
+  }}>
+    {reaction}
+  </div>
+)}
       <div style={{
         display:'grid',
         gridTemplateColumns:'repeat(2, 1fr)',
