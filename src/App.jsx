@@ -430,21 +430,17 @@ const PIPS = {
   6: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 0], [2, 2]],
 }
 
-function FaceDe({ valeur, enTrain }) {
-  const actifs = new Set((PIPS[valeur] || []).map(([r, c]) => `${r}-${c}`))
-  return (
-    <div style={{ ...st.deCube, animation: enTrain ? 'tourneDe 0.5s linear infinite' : 'none' }}>
-      <div style={st.deGrille}>
-        {[0, 1, 2].map((r) =>
-          [0, 1, 2].map((c) => (
-            <div key={`${r}-${c}`} style={st.dePipCase}>
-              {actifs.has(`${r}-${c}`) && <div style={st.dePip} />}
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  )
+function faceDe(valeur) {
+  const faces = {
+    1: '⚀',
+    2: '⚁',
+    3: '⚂',
+    4: '⚃',
+    5: '⚄',
+    6: '⚅'
+  }
+
+  return faces[valeur] || '🎲'
 }
 
 function PageDe({ onRetour }) {
@@ -1166,8 +1162,9 @@ const faceDe = (n) => {
     3: '⚂',
     4: '⚃',
     5: '⚄',
-    6: '⚅',
+    6: '⚅'
   }
+
   return faces[n] || '🎲'
 }
 
