@@ -1151,7 +1151,6 @@ function sonPas() {
   const [coupsDispo, setCoupsDispo] = useState([])
   const [messageTour, setMessageTour] = useState('')
 const [deBouge, setDeBouge] = useState(false)
-const [pionBouge, setPionBouge] = useState(false)
 
 function sonPas() {
   try {
