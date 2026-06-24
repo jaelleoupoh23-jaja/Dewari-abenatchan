@@ -1004,9 +1004,9 @@ function BarreChatCadeaux() {
     console.error(error)
     return
 }
-    if (!message.trim()) return
-    setMessages([...messages, { texte: message, type: 'message' }])
-    setMessage('')
+  setMessages([...messages, { texte: message, type: 'message' }])
+setMessage('')
+}
   }
 
   const envoyerReaction = (emoji) => {
