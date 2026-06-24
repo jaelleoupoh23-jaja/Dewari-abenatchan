@@ -776,7 +776,7 @@ const totem = {
   fontSize:34,
   lineHeight:'1'
 }}>
-  {dernierDe || '🎲'}
+ {deBouge ? '🎲' : (dernierDe || '🎲')}
 </span>  </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
@@ -1092,7 +1092,7 @@ setMessage('')
           onClick={envoyerMessage}
           style={{ fontSize:22, background:'transparent', border:0, cursor:'pointer' }}
         >
-          🎤
+          ➤
         </button>
       </div>
 
@@ -1191,22 +1191,29 @@ function lancerAvecAnimation() {
     setPhase('jeu')
   }
 
-  function lancer() {
-    if (!partie || coupsDispo.length > 0) return
-    const resultat = lancerDe(partie)
-    setPartie(resultat.partie)
+ async function lancer() {
+  if (!partie || coupsDispo.length > 0 || deBouge) return
 
-    if (resultat.tourAnnule) {
-      setMessageTour(`3 six d'affilée → tour annulé, au suivant !`)
-      setCoupsDispo([])
-    } else if (resultat.aucunCoup) {
-      setMessageTour(`Dé : ${resultat.valeur} — aucun coup possible, au suivant.`)
-      setCoupsDispo([])
-    } else {
-      setMessageTour(`Dé : ${resultat.valeur} — choisis un pion à jouer.`)
-      setCoupsDispo(resultat.coups)
-    }
+  setDeBouge(true)
+  setMessageTour('Le dé tourne...')
+
+  await new Promise((resolve) => setTimeout(resolve, 900))
+
+  const resultat = lancerDe(partie)
+  setDeBouge(false)
+  setPartie(resultat.partie)
+
+  if (resultat.tourAnnule) {
+    setMessageTour('3 six d’affilée → tour annulé, au suivant :-')
+    setCoupsDispo([])
+  } else if (resultat.aucunCoup) {
+    setMessageTour(`Dé : ${resultat.valeur} — aucun coup possible, au suivant :-`)
+    setCoupsDispo([])
+  } else {
+    setMessageTour(`Dé : ${resultat.valeur} — choisis un pion à jouer.`)
+    setCoupsDispo(resultat.coups)
   }
+}
 
 async function jouerPion(index) {
   if (!partie || !partie.dernierDe || pionBouge) return
