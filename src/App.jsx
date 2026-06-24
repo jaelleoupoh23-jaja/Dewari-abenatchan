@@ -116,17 +116,25 @@ const DEPART_COULEUR = {
 }
 
 function coordPion(couleur, pion, index) {
-  if (pion.etat === 'base') return BASE_COORDS[couleur][index]
+  if (pion.etat === 'base') {
+    return BASE_COORDS[couleur]?.[index] || [7, 7]
+  }
 
   if (pion.etat === 'parcours') {
     const depart = DEPART_COULEUR[couleur] || 0
     const positionReelle = (depart + pion.position) % CASES_PARCOURS.length
-    return CASES_PARCOURS[positionReelle]
+    return CASES_PARCOURS[positionReelle] || [7, 7]
   }
 
-  if (pion.etat === 'couloir') return COULOIR_COORDS[couleur][pion.position]
+  if (pion.etat === 'couloir') {
+    return COULOIR_COORDS[couleur]?.[pion.position] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
+  }
 
-  return [7, 7]
+  if (pion.etat === 'arrivee') {
+    return COULOIR_COORDS[couleur]?.[5] || [7, 7]
+  }
+
+  return BASE_COORDS[couleur]?.[index] || [7, 7]
 }
 export default function App() {
   const [ecran, setEcran] = useState('accueil')
@@ -1125,7 +1133,15 @@ setMessage('')
 function PageLudo({ onRetour }) {
 const [phase, setPhase] = useState('config');
 const [nbJoueurs, setNbJoueurs] = useState(2);
-const [noms, setNoms] = useState([
+  const [pionBouge, setPionBouge] = useState(false);
+function sonPas() {
+  try {
+    const audio = new Audio('/pas.mp3')
+    audio.volume = 0.35
+    audio.play().catch(() => {})
+  } catch (e) {}
+}
+  const [noms, setNoms] = useState([
   nomAfricainAuto(),
   nomAfricainAuto(),
   nomAfricainAuto(),
@@ -1135,7 +1151,13 @@ const [noms, setNoms] = useState([
   const [coupsDispo, setCoupsDispo] = useState([])
   const [messageTour, setMessageTour] = useState('')
 const [deBouge, setDeBouge] = useState(false)
+const [pionBouge, setPionBouge] = useState(false)
 
+function sonPas() {
+  const audio = new Audio('/pas.mp3')
+  audio.volume = 0.35
+  audio.play().catch(() => {})
+}
 const faceDe = (n) => {
   const faces = {
     1: '⚀',
@@ -1185,31 +1207,69 @@ function lancerAvecAnimation() {
     }
   }
 
-  function jouerPion(index) {
-    if (!partie || !partie.dernierDe) return
-    let nouvellePartie = jouerCoup(partie, index, partie.dernierDe)
+async function jouerPion(index) {
+  if (!partie || !partie.dernierDe || pionBouge) return
 
-    if (nouvellePartie.vainqueur) {
-      setPartie(nouvellePartie)
-      setCoupsDispo([])
-      setPhase('fini')
-      return
+  setPionBouge(true)
+
+  const valeur = partie.dernierDe
+  const couleur = partie.couleurs[partie.tourActuel]
+  const pionDepart = partie.pions[couleur][index]
+  let nouvellePartie = jouerCoup(partie, index, valeur)
+
+  let partieAnimee = JSON.parse(JSON.stringify(partie))
+
+  for (let pas = 1; pas <= valeur; pas++) {
+    let pionAnime = { ...pionDepart }
+
+    if (pionDepart.etat === 'base') {
+      pionAnime = { etat: 'parcours', position: 0 }
+    } else if (pionDepart.etat === 'parcours') {
+      const pos = pionDepart.position + pas
+      if (pos < 51) pionAnime = { etat: 'parcours', position: pos }
+      else pionAnime = { etat: 'couloir', position: 0 }
+    } else if (pionDepart.etat === 'couloir') {
+      const pos = pionDepart.position + pas
+      if (pos < 5) pionAnime = { etat: 'couloir', position: pos }
+      else pionAnime = { etat: 'arrivee', position: 5 }
     }
 
-    if (!nouvellePartie.doitRejouer) {
-      nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
-      setMessageTour('')
-    } else {
-      setMessageTour('Tu rejoues !')
+    partieAnimee = {
+      ...partieAnimee,
+      pions: {
+        ...partieAnimee.pions,
+        [couleur]: partieAnimee.pions[couleur].map((p, i) =>
+          i === index ? pionAnime : p
+        )
+      }
     }
+
+    setPartie(partieAnimee)
+    sonPas()
+    await new Promise((resolve) => setTimeout(resolve, 260))
+  }
+
+  if (nouvellePartie.vainqueur) {
     setPartie(nouvellePartie)
     setCoupsDispo([])
+    setPhase('fini')
+    setPionBouge(false)
+    return
   }
 
-  function rejouerPartie() {
-    setPartie(null)
-    setPhase('config')
+  if (!nouvellePartie.doitRejouer) {
+    nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
+    setMessageTour('')
+  } else {
+    setMessageTour('Tu rejoues !')
   }
+
+  setPartie(nouvellePartie)
+  setCoupsDispo([])
+  setPionBouge(false)
+}
+
+ 
 
   const couleurCourante = partie?.couleurs[partie.tourActuel]
   const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
