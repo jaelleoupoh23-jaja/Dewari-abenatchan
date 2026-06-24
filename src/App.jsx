@@ -984,7 +984,59 @@ function BarreChatCadeaux() {
   const [messages, setMessages] = useState([])
   const [reaction, setReaction] = useState(null)
   const [emojiOuvert, setEmojiOuvert] = useState(false)
+async function chargerMessages() {
+  const { data, error } = await supabase
+    .from('messages_partie')
+    .select('*')
+    .order('created_at', { ascending: true })
 
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  if (data) {
+    setMessages(
+      data.map(m => ({
+        texte: m.contenu,
+        type: m.type,
+        pseudo: m.pseudo
+      }))
+    )
+  }
+}
+
+useEffect(() => {
+  chargerMessages()
+
+  const channel = supabase
+    .channel('chat-partie')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages_partie'
+      },
+      (payload) => {
+        const msg = payload.new
+
+        setMessages(prev => [
+          ...prev,
+          {
+            texte: msg.contenu,
+            type: msg.type,
+            pseudo: msg.pseudo
+          }
+        ])
+      }
+    )
+    .subscribe()
+
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [])
   const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤','❤️','👏🏿','🤣']
 
   const envoyerMessage = async () => {
