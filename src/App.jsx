@@ -126,13 +126,13 @@ function coordPion(couleur, pion, index) {
     return CASES_PARCOURS[positionReelle] || [7, 7]
   }
 
-  if (pion.etat === 'couloir') {
-    return COULOIR_COORDS[couleur]?.[pion.position] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
-  }
-
-  if (pion.etat === 'arrivee') {
-    return COULOIR_COORDS[couleur]?.[5] || [7, 7]
-  }
+ if (pion.etat === 'couloir') {
+  const pos = Math.max(0, pion.position ?? 0)
+  return COULOIR_COORDS[couleur]?.[pos] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
+}
+ if (pion.etat === 'arrivee') {
+  return COULOIR_COORDS[couleur]?.[5] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
+}
 
   return BASE_COORDS[couleur]?.[index] || [7, 7]
 }
