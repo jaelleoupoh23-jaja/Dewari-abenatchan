@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { supabase } from './supabaseClient'
+import ChatJeu from './ChatJeu'
 import AgoraRTC from 'agora-rtc-sdk-ng'
-import { creerPartie, coupsValides, jouerCoup, lancerDe, passerAuJoueurSuivant, estCaseSecurisee } from './moteurLudo'
+import { creerPartie, coupsValides, jouerCoup, lancerDe, passerAuJoueurSuivant, estCaseSecurisee } from './MoteurLudo'
 
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
@@ -20,7 +21,49 @@ const ONGLETS = [
 const NUMERO_WAVE = '07-08-68-02-36'
 
 const COULEURS_LUDO = ['rouge', 'vert', 'jaune', 'bleu']
-const HEX_COULEUR = { rouge: '#FF4D6D', vert: '#23A559', jaune: '#FFB800', bleu: '#3A86FF' }
+const HEX_COULEUR = {
+  rouge: '#E63946',
+  vert: '#1B9E4B',
+  jaune: '#F6B800',
+  bleu: '#1E88E5'
+}
+
+const NOMS_AFRICAINS = [
+  'Awa', 'Koffi', 'Yao', 'Aminata', 'Fatou', 'Moussa', 'Aïcha', 'Ibrahim',
+  'Kwame', 'Ama', 'Kojo', 'Akosua', 'Nana', 'Abena', 'Kwaku', 'Efua',
+
+  'Chinua', 'Ngozi', 'Chiamaka', 'Emeka', 'Amara', 'Zainab', 'Temitope', 'Oluwaseun',
+  'Adeola', 'Folake', 'Tunde', 'Bamidele', 'Yetunde', 'Adebayo',
+
+  'Thabo', 'Nomsa', 'Lerato', 'Sipho', 'Naledi', 'Bongani', 'Zanele', 'Mandla',
+  'Katlego', 'Tshepo', 'Refilwe', 'Kagiso', 'Tumelo',
+
+  'Alem', 'Selam', 'Dawit', 'Mekdes', 'Tesfaye', 'Hana', 'Abebe', 'Liya',
+  'Berhanu', 'Kidist', 'Natnael', 'Rahel',
+
+  'Omar', 'Yasmine', 'Samir', 'Leila', 'Karim', 'Nour', 'Rania', 'Malika',
+  'Amine', 'Sana', 'Walid', 'Salma',
+
+  'Cheikh', 'Sokhna', 'Mamadou', 'Bineta', 'Ousmane', 'Adama', 'Khady', 'Boubacar',
+  'Aissatou', 'Ibrahima', 'Mame', 'Coumba',
+
+  'Amani', 'Juma', 'Nia', 'Baraka', 'Zuri', 'Imani', 'Kito', 'Nala',
+  'Jelani', 'Makena', 'Ayanna', 'Kamau',
+
+  'Aziz', 'Hassan', 'Mariam', 'Youssef', 'Soraya', 'Farid', 'Nadia', 'Dalia',
+
+  'Tariro', 'Nyasha', 'Tatenda', 'Rutendo',
+  'Mpho', 'Boitumelo', 'Neo', 'Kelebogile',
+  'Tinashe', 'Rudo', 'Anesu', 'Vimbai'
+]
+
+function nomAfricainAuto() {
+  const nom = NOMS_AFRICAINS[
+    Math.floor(Math.random() * NOMS_AFRICAINS.length)
+  ]
+
+  return `${nom}${Math.floor(100 + Math.random() * 900)}`
+}
 
 const CASES_PARCOURS = [
   [6,1],[6,2],[6,3],[6,4],[6,5],
@@ -56,18 +99,44 @@ const ZONES_BASE = {
   rouge: { x: 0, y: 0 },
   vert: { x: 9, y: 0 },
   jaune: { x: 9, y: 9 },
-  bleu: { x: 0, y: 9 },
+  bleu: { x: 0, y: 9 }
+}
+
+const COULEURS_DUEL = {
+  rouge: { x: 0, y: 0 },
+  jaune: { x: 9, y: 0 }
 }
 
 const CELLULE = 22
 
-function coordPion(couleur, pion, index) {
-  if (pion.etat === 'base') return BASE_COORDS[couleur][index]
-  if (pion.etat === 'parcours') return CASES_PARCOURS[pion.position]
-  if (pion.etat === 'couloir') return COULOIR_COORDS[couleur][pion.position]
-  return [7, 7]
+const DEPART_COULEUR = {
+  rouge: 0,
+  vert: 13,
+  jaune: 26,
+  bleu: 39,
 }
 
+function coordPion(couleur, pion, index) {
+  if (pion.etat === 'base') {
+    return BASE_COORDS[couleur]?.[index] || [7, 7]
+  }
+
+  if (pion.etat === 'parcours') {
+    const depart = DEPART_COULEUR[couleur] || 0
+    const positionReelle = (depart + pion.position) % CASES_PARCOURS.length
+    return CASES_PARCOURS[positionReelle] || [7, 7]
+  }
+
+ if (pion.etat === 'couloir') {
+  const pos = Math.max(0, pion.position ?? 0)
+  return COULOIR_COORDS[couleur]?.[pos] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
+}
+ if (pion.etat === 'arrivee') {
+  return COULOIR_COORDS[couleur]?.[5] || COULOIR_COORDS[couleur]?.[0] || [7, 7]
+}
+
+  return BASE_COORDS[couleur]?.[index] || [7, 7]
+}
 export default function App() {
   const [ecran, setEcran] = useState('accueil')
   const [session, setSession] = useState(null)
@@ -77,7 +146,8 @@ export default function App() {
   const [tournoi, setTournoi] = useState(null)
   const [modalAuth, setModalAuth] = useState(null)
   const [inscritTournoi, setInscritTournoi] = useState(false)
-
+const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
+  const [nouveauxMessages, setNouveauxMessages] = useState(0)
   const refTournoi = useRef(null)
   const refSalons = useRef(null)
   const refCompte = useRef(null)
@@ -309,7 +379,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
           <div style={st.carteDeEmoji}>🎲</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
             <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dé</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Lance les dés · style casino</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · premier à 10 gagne</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
         </div>
@@ -317,7 +387,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
         <div onClick={onOuvrirLudo} style={st.carteLudo}>
           <div style={st.carteDeEmoji}>♟️</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Ludo</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dewari</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · règles classiques</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
@@ -353,184 +423,331 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
   )
 }
 
-const PIPS_POSITIONS = {
-  1: [[50, 50]],
-  2: [[28, 28], [72, 72]],
-  3: [[28, 28], [50, 50], [72, 72]],
-  4: [[28, 28], [72, 28], [28, 72], [72, 72]],
-  5: [[28, 28], [72, 28], [50, 50], [28, 72], [72, 72]],
-  6: [[28, 22], [72, 22], [28, 50], [72, 50], [28, 78], [72, 78]],
+const PIPS = {
+  1: [[1, 1]],
+  2: [[0, 0], [2, 2]],
+  3: [[0, 0], [1, 1], [2, 2]],
+  4: [[0, 0], [0, 2], [2, 0], [2, 2]],
+  5: [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
+  6: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 0], [2, 2]],
 }
 
-function De3D({ valeur, tourne, onClick }) {
-  const pips = PIPS_POSITIONS[valeur] || []
-  return (
-    <div
-      onClick={onClick}
-      style={{
-        width: 110,
-        height: 110,
-        borderRadius: 22,
-        background: 'linear-gradient(145deg, #ffffff 0%, #f5f5f5 50%, #e8e8e8 100%)',
-        boxShadow: tourne
-          ? '0 0 50px rgba(255,75,109,0.7), 0 0 20px rgba(255,184,0,0.4), 6px 6px 0 #bbb, 10px 10px 0 #999'
-          : '6px 6px 0 #bbb, 10px 10px 0 #999, inset 0 2px 0 rgba(255,255,255,0.95)',
-        position: 'relative',
-        cursor: 'pointer',
-        animation: tourne ? 'de3dSpin 0.9s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none',
-        transition: 'box-shadow 0.3s',
-        flexShrink: 0,
-      }}
-    >
-      {pips.map(([x, y], i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: 17,
-            height: 17,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 30%, #ff6b8a, #CC0020)',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,150,150,0.3)',
-            left: `${x}%`,
-            top: `${y}%`,
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
-      ))}
-    </div>
-  )
+function faceDe(valeur) {
+  const faces = {
+    1: '⚀',
+    2: '⚁',
+    3: '⚂',
+    4: '⚃',
+    5: '⚄',
+    6: '⚅'
+  }
+
+  return faces[valeur] || '🎲'
 }
 
 function PageDe({ onRetour }) {
-  const [val1, setVal1] = useState(6)
-  const [val2, setVal2] = useState(6)
-  const [tourne, setTourne] = useState(false)
-  const [total, setTotal] = useState(null)
-  const [hint, setHint] = useState(true)
+  const [phase, setPhase] = useState('config')
+  const [nbJoueurs, setNbJoueurs] = useState(2)
+ const [noms, setNoms] = useState([nomAfricainAuto(), nomAfricainAuto(), nomAfricainAuto(), nomAfricainAuto()])
+  const [scores, setScores] = useState([])
+  const [tour, setTour] = useState(0)
+  const [valeurAffichee, setValeurAffichee] = useState(1)
+  const [dernierLancer, setDernierLancer] = useState(null)
+  const [enTrainDeLancer, setEnTrainDeLancer] = useState(false)
+  const [vainqueur, setVainqueur] = useState(null)
+  const intervalleRef = useRef(null)
 
-  function lancer() {
-    if (tourne) return
-    setTourne(true)
-    setTotal(null)
-    setHint(false)
+  function demarrer() {
+    setScores(Array(nbJoueurs).fill(0))
+    setTour(0)
+    setDernierLancer(null)
+    setVainqueur(null)
+    setValeurAffichee(1)
+    setPhase('jeu')
+  }
+
+  function lancerDe() {
+    if (enTrainDeLancer || vainqueur !== null) return
+    setEnTrainDeLancer(true)
+    intervalleRef.current = setInterval(() => {
+      setValeurAffichee(Math.floor(Math.random() * 6) + 1)
+    }, 80)
     setTimeout(() => {
-      const v1 = Math.floor(Math.random() * 6) + 1
-      const v2 = Math.floor(Math.random() * 6) + 1
-      setVal1(v1)
-      setVal2(v2)
-      setTotal(v1 + v2)
-      setTourne(false)
-    }, 900)
+      clearInterval(intervalleRef.current)
+  const valeur = Math.floor(Math.random() * 6) + 1
+const points = valeur === 6 ? 1.5 : valeur
+      setValeurAffichee(valeur)
+      setScores((anciens) => {
+        const nouveaux = [...anciens]
+        nouveaux[tour] = nouveaux[tour] + points
+        if (nouveaux[tour] >= 10) {
+          setVainqueur(tour)
+          setPhase('fini')
+        }
+        return nouveaux
+      })
+      setDernierLancer({ valeur, points, joueur: tour })
+      setEnTrainDeLancer(false)
+      setTour((t) => (t + 1) % nbJoueurs)
+    }, 700)
+  }
+
+  useEffect(() => () => clearInterval(intervalleRef.current), [])
+
+  function rejouer() {
+    setPhase('config')
   }
 
   return (
     <div style={st.page}>
       <style>{`
-        @keyframes de3dSpin {
-          0%   { transform: rotateX(0deg)   rotateY(0deg)   scale(1); }
-          15%  { transform: rotateX(180deg) rotateY(90deg)  scale(1.12); }
-          35%  { transform: rotateX(360deg) rotateY(180deg) scale(1.18); }
-          55%  { transform: rotateX(450deg) rotateY(270deg) scale(1.14); }
-          75%  { transform: rotateX(540deg) rotateY(340deg) scale(1.08); }
-          100% { transform: rotateX(720deg) rotateY(360deg) scale(1); }
-        }
-        @keyframes totalAppear {
-          0%   { opacity: 0; transform: scale(0.4) translateY(16px); }
-          60%  { opacity: 1; transform: scale(1.12) translateY(-4px); }
-          100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        @keyframes hintPulse {
-          0%, 100% { opacity: 0.4; transform: scale(1); }
-          50%      { opacity: 0.9; transform: scale(1.04); }
+        @keyframes tourneDe {
+          0% { transform: rotate(0deg) scale(1); }
+          50% { transform: rotate(180deg) scale(1.1); }
+          100% { transform: rotate(360deg) scale(1); }
         }
       `}</style>
 
       <div style={st.enteteChat}>
         <button onClick={onRetour} style={st.retour}>←</button>
-        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Les Dés</span>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Le Dé</span>
       </div>
 
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px 18px',
-        background: 'radial-gradient(ellipse at 50% 40%, #1a1040 0%, #16142a 100%)',
-      }}>
-        <div style={{
-          display: 'flex',
-          gap: 36,
-          alignItems: 'center',
-          justifyContent: 'center',
-          perspective: 700,
-          marginBottom: 44,
-        }}>
-          <De3D valeur={val1} tourne={tourne} onClick={lancer} />
-          <De3D valeur={val2} tourne={tourne} onClick={lancer} />
+      {phase === 'config' && (
+        <div style={st.section}>
+          <div style={st.sectionTitre}>Combien de joueurs ?</div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            {[2, 4].map((n) => (
+              <button
+                key={n}
+                onClick={() => setNbJoueurs(n)}
+                style={{ ...st.ongletAuth, flex: 1, ...(nbJoueurs === n ? st.ongletActif : {}) }}
+              >
+                {n} joueurs
+              </button>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 18 }}>
+            {Array.from({ length: nbJoueurs }).map((_, i) => (
+              <input
+                key={i}
+                value={noms[i]}
+                onChange={(e) => {
+                  const copie = [...noms]
+                  copie[i] = e.target.value
+                  setNoms(copie)
+                }}
+                style={st.input}
+                placeholder={`Nom du joueur ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          <div style={st.regleDe}>
+            🎲 Le Dé, c'est un mini-jeu rapide pour se défier entre amis pendant qu'on attend une partie de Ludo, ou juste pour s'amuser 5 minutes.
+            <br /><br />
+            Chaque lancer donne ses points normaux (1 à 5), sauf le <b>6</b> qui ne vaut que <b>1.5 point</b> — le hasard peut surprendre jusqu'au bout. Le premier à atteindre <b>10 points</b> gagne.
+          </div>
+
+          <button onClick={demarrer} style={{ ...st.boutonPrincipal, marginTop: 18 }}>
+            Démarrer la partie
+          </button>
         </div>
+      )}
 
-        {total !== null && !tourne && (
-          <div style={{ animation: 'totalAppear 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards', textAlign: 'center' }}>
-            <div style={{ fontSize: 12, color: '#9a93b5', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8 }}>
-              Total
-            </div>
-            <div style={{
-              fontSize: 72,
-              fontWeight: 900,
-              background: 'linear-gradient(135deg, #FF4D6D 0%, #FFB800 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              lineHeight: 1,
-            }}>
-              {total}
-            </div>
-            {total === 12 && <div style={{ fontSize: 24, marginTop: 10 }}>🔥 Double 6 !</div>}
-            {total === 2  && <div style={{ fontSize: 24, marginTop: 10 }}>😬 Snake eyes...</div>}
-            {val1 === val2 && total !== 12 && total !== 2 && (
-              <div style={{ fontSize: 18, marginTop: 10, color: '#FFB800' }}>✨ Double !</div>
+      {phase === 'jeu' && (
+        <div style={st.section}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {Array.from({ length: nbJoueurs }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  ...st.ligneSalon,
+                  background: i === tour ? '#2a2050' : '#1d1a35',
+                  border: i === tour ? '1px solid #FF4D6D' : 'none',
+                }}
+              >
+                <div style={{ flex: 1, fontWeight: 800 }}>{noms[i]}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#FFB800' }}>{scores[i]}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={st.zoneDe}>   <div style={st.robotBox}>     🤖{enTrainDeLancer ? 'Le dé tourne...' : 'À moi la victoire !'}   </div>
+          <div
+  style={{
+    fontSize: 56,
+    display: 'inline-block',
+    transform: enTrainDeLancer ? 'rotate(720deg) scale(1.2)' : 'rotate(0deg) scale(1)',
+    transition: 'transform 0.7s ease',
+    filter: 'drop-shadow(0 0 12px #ffffff)'
+  }}
+>
+  {faceDe(valeurAffichee)}
+</div>
+            {dernierLancer && !enTrainDeLancer && (
+              <div style={{ fontSize: 13, color: '#9a93b5', marginTop: 12 }}>
+                {noms[dernierLancer.joueur]} a fait {dernierLancer.valeur} → +{dernierLancer.points} pt{dernierLancer.points > 1 ? 's' : ''}
+              </div>
             )}
+            <div style={{ fontWeight: 800, marginTop: 10, fontSize: 15 }}>
+              Au tour de {noms[tour]}
+            </div>
+            <button onClick={lancerDe} disabled={enTrainDeLancer} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
+              {enTrainDeLancer ? '🎲 Déwari tourne...' : '🎲 Lancer le Déwari'}
+            </button>
           </div>
-        )}
+        </div>
+      )}
 
-        {hint && !tourne && (
-          <div style={{ animation: 'hintPulse 2s ease-in-out infinite', color: '#9a93b5', fontSize: 13, marginTop: 24, textAlign: 'center' }}>
-            Touche les dés pour lancer
+      {phase === 'fini' && vainqueur !== null && (
+        <div style={st.section}>
+          <div style={st.zoneDe}>
+            <div style={{ fontSize: 48 }}>🏆</div>
+            <div style={{ fontSize: 20, fontWeight: 800, marginTop: 10 }}>{noms[vainqueur]} gagne !</div>
+            <div style={{ fontSize: 14, color: '#9a93b5', marginTop: 4 }}>Score final : {scores[vainqueur]} points</div>
+            <button onClick={rejouer} style={{ ...st.boutonPrincipal, marginTop: 18 }}>Rejouer</button>
           </div>
-        )}
-
-        {tourne && (
-          <div style={{ color: '#9a93b5', fontSize: 13, marginTop: 24, letterSpacing: 4 }}>
-            · · ·
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
 
-function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
-  const couleurCourante = partie.couleurs[partie.tourActuel]
+function PlateauLudo({ partie, coupsDispo, onJouerPion, dernierDe, couleurCourante, deBouge, onLancer }) {
+
+  const couleursAffichees =
+    partie?.couleurs?.length === 2
+      ? ['rouge', 'jaune']
+      : Object.keys(ZONES_BASE)
+
+const totem = {
+  rouge: {
+    name: "Royaume Lion",
+    icon: "🦁"
+  },
+  vert: {
+    name: "Jungle Panthère",
+    icon: "🐆"
+  },
+  jaune: {
+    name: "Ciel Aigle",
+    icon: "🦅"
+  },
+  bleu: {
+    name: "Tribu Éléphant",
+    icon: "🐘"
+  }
+}
+
+  const zoneLabel = {
+    rouge: 'ROYAUME LION',
+    vert: 'JUNGLE PANTHÈRE',
+    jaune: 'CIEL AIGLE',
+    bleu: 'TERRE ÉLÉPHANT',
+  }
 
   return (
     <svg viewBox="0 0 330 330" style={st.ludoSvg}>
-      {Object.entries(ZONES_BASE).map(([couleur, z]) => (
+      <defs>
+        <pattern id="motifJungle" width="42" height="42" patternUnits="userSpaceOnUse">
+          <rect width="42" height="42" fill="#06381f" />
+          <path d="M0 22 Q16 4 42 16" stroke="#0b6538" strokeWidth="5" fill="none" opacity="0.45" />
+          <path d="M4 38 Q20 20 38 34" stroke="#0f8a4b" strokeWidth="3" fill="none" opacity="0.35" />
+          <circle cx="8" cy="9" r="3" fill="#2ecc71" opacity="0.35" />
+          <circle cx="33" cy="27" r="4" fill="#27ae60" opacity="0.25" />
+        </pattern>
+
+        <linearGradient id="boisCase" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f8e7b0" />
+          <stop offset="45%" stopColor="#d9b66f" />
+          <stop offset="100%" stopColor="#9b6a28" />
+        </linearGradient>
+
+        <filter id="ombreFort" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="5" stdDeviation="4" floodColor="#000" floodOpacity="0.65" />
+        </filter>
+
+        <filter id="lumiereOr" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#FFD700" floodOpacity="0.85" />
+        </filter>
+      </defs>
+
+      <rect x="0" y="0" width="330" height="330" rx="30" fill="url(#motifJungle)" />
+      <rect x="8" y="8" width="314" height="314" rx="30" fill="rgba(0,0,0,0.22)" stroke="#FFD700" strokeWidth="4" filter="url(#lumiereOr)" />
+
+      <text x="20" y="30" fontSize="22">🌿</text>
+      <text x="286" y="31" fontSize="22">🌴</text>
+      <text x="18" y="309" fontSize="22">🍃</text>
+      <text x="286" y="310" fontSize="22">🌿</text>
+
+{couleursAffichees.map((couleur) => {
+  const z = ZONES_BASE[couleur]
+
+  return (
+    <g key={couleur} filter="url(#ombreFort)">
+          <rect
+            x={z.x * CELLULE + 2}
+            y={z.y * CELLULE + 2}
+            width={6 * CELLULE - 4}
+            height={6 * CELLULE - 4}
+            rx="20"
+            fill={HEX_COULEUR[couleur]}
+            opacity="0.78"
+            stroke="#FFD700"
+            strokeWidth="2.5"
+          />
+
+          <rect
+            x={z.x * CELLULE + 15}
+            y={z.y * CELLULE + 15}
+            width={6 * CELLULE - 30}
+            height={6 * CELLULE - 30}
+            rx="14"
+            fill="rgba(255,255,255,0.18)"
+            stroke="rgba(255,255,255,0.55)"
+            strokeWidth="1.2"
+          />
+
+          <text
+            x={z.x * CELLULE + 3 * CELLULE}
+            y={z.y * CELLULE + 3 * CELLULE + 5}
+            textAnchor="middle"
+            fontSize="24"
+            opacity="0.32"
+          >
+            🌴
+          </text>
+
+          <text
+            x={z.x * CELLULE + 3 * CELLULE}
+            y={z.y * CELLULE + 6 * CELLULE - 8}
+            textAnchor="middle"
+            fontSize="5.5"
+            fontWeight="900"
+            fill="#fff"
+            opacity="0.8"
+          >
+            {zoneLabel[couleur]}
+          </text>
+       </g>
+  )
+})}
+
+      {CASES_PARCOURS.map(([r, c], i) => (
         <rect
-          key={couleur}
-          x={z.x * CELLULE}
-          y={z.y * CELLULE}
-          width={6 * CELLULE}
-          height={6 * CELLULE}
-          fill={HEX_COULEUR[couleur]}
-          opacity={0.18}
-          rx={10}
+          key={`case-${i}`}
+          x={c * CELLULE}
+          y={r * CELLULE}
+          width={CELLULE}
+          height={CELLULE}
+          rx="2"
+          fill={estCaseSecurisee(i) ? '#FFD86B' : 'url(#boisCase)'}
+          stroke="#3a240d"
+          strokeWidth="0.8"
         />
       ))}
-
-      <rect x={6 * CELLULE} y={6 * CELLULE} width={3 * CELLULE} height={3 * CELLULE} fill="#2a2050" rx={6} />
-      <text x={7.5 * CELLULE} y={7.7 * CELLULE} textAnchor="middle" fontSize="16">🏆</text>
 
       {Object.entries(COULOIR_COORDS).map(([couleur, cases]) =>
         cases.map(([r, c], i) => (
@@ -540,33 +757,57 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
             y={r * CELLULE}
             width={CELLULE}
             height={CELLULE}
+            rx="2"
             fill={HEX_COULEUR[couleur]}
-            opacity={0.5}
-            stroke="#16142a"
-            strokeWidth={0.5}
+            opacity="0.9"
+            stroke="#2b1608"
+            strokeWidth="0.8"
           />
         ))
       )}
 
-      {CASES_PARCOURS.map(([r, c], i) => (
-        <rect
-          key={`case-${i}`}
-          x={c * CELLULE}
-          y={r * CELLULE}
-          width={CELLULE}
-          height={CELLULE}
-          fill={estCaseSecurisee(i) ? '#FFE08A' : '#f4f2fb'}
-          stroke="#16142a"
-          strokeWidth={0.5}
-        />
-      ))}
+      <rect
+        x={6 * CELLULE}
+        y={6 * CELLULE}
+        width={3 * CELLULE}
+        height={3 * CELLULE}
+        rx="9"
+        fill="#0b2b16"
+        stroke="#FFD700"
+        strokeWidth="2"
+        filter="url(#lumiereOr)"
+      />
+      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     <span style={{
+  display:'block',
+  color:'#111',
+  fontWeight:900,
+  fontSize:34,
+  lineHeight:'1'
+}}>
+ {deBouge ? '🎲' : (dernierDe || '🎲')}
+</span>  </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
           const [r, c] = coordPion(couleur, pion, index)
-          const decalage = pion.etat === 'arrivee' || pion.etat === 'parcours' ? (index % 4) * 3 : 0
-          const cx = c * CELLULE + CELLULE / 2 + decalage
-          const cy = r * CELLULE + CELLULE / 2 + decalage
+        const offsets = [
+  [0, 0],
+  [-4, -4],
+  [4, -4],
+  [-4, 4],
+  [4, 4],
+]
+
+const memeCase = partie.pions[couleur].filter((p, i) => {
+  const [rr, cc] = coordPion(couleur, p, i)
+  return rr === r && cc === c && p.etat !== 'base'
+})
+
+const rangPile = memeCase.findIndex((p) => p === pion)
+const [dx, dy] = pion.etat === 'base' ? [0, 0] : offsets[rangPile] || [0, 0]
+
+const cx = c * CELLULE + CELLULE / 2 + dx
+const cy = r * CELLULE + CELLULE / 2 + dy
           const jouable = couleur === couleurCourante && coupsDispo.some((cp) => cp.index === index)
 
           return (
@@ -574,79 +815,547 @@ function PlateauLudo({ partie, coupsDispo, onJouerPion }) {
               key={`${couleur}-${index}`}
               onClick={() => jouable && onJouerPion(index)}
               style={{ cursor: jouable ? 'pointer' : 'default' }}
+              filter="url(#ombreFort)"
             >
               {jouable && (
-                <circle cx={cx} cy={cy} r={CELLULE / 2.1} fill="none" stroke="#fff" strokeWidth={2}>
-                  <animate attributeName="r" values={`${CELLULE / 2.6};${CELLULE / 1.9};${CELLULE / 2.6}`} dur="1s" repeatCount="indefinite" />
+                <circle cx={cx} cy={cy} r={CELLULE / 1.45} fill="none" stroke="#FFD700" strokeWidth="2.5">
+                  <animate attributeName="r" values={`${CELLULE / 2};${CELLULE / 1.35};${CELLULE / 2}`} dur="1s" repeatCount="indefinite" />
                 </circle>
               )}
-              <circle cx={cx} cy={cy} r={CELLULE / 2.8} fill={HEX_COULEUR[couleur]} stroke="#16142a" strokeWidth={1.5} />
+
+              <ellipse cx={cx} cy={cy + 9} rx="10" ry="4" fill="rgba(0,0,0,0.45)" />
+
+             <circle
+  cx={cx}
+  cy={cy}
+  r="7"
+                fill="#fff8cf"
+                stroke="#FFD700"
+                strokeWidth="1.4"
+              />
+
+              <circle
+                cx={cx}
+                cy={cy}
+                r="7"
+                fill={HEX_COULEUR[couleur]}
+                opacity="0.25"
+              />
+<text
+  x={cx}
+  y={cy + 5}
+  textAnchor="middle"
+fontSize="13"
+>
+  ♟
+</text>
+<title>{totem[couleur].name}</title>
+
             </g>
           )
         })
       )}
     </svg>
   )
+} 
+
+function InterfaceLudoPro({
+  partie,
+  noms,
+  indexCourant,
+  couleurCourante,
+  coupsDispo,
+  deBouge,
+  lancerAvecAnimation,
+  jouerPion,
+  onOuvrirChat
+}) {
+  const joueurs = partie.couleurs.map((couleur, i) => ({
+    couleur,
+    nom: noms[i],
+    actif: i === indexCourant,
+    pieces: [15600, 22840, 8350, 12420][i] || 5000,
+    trophees: [520, 780, 320, 410][i] || 100,
+    drapeau: ['🇸🇳', '🇨🇮', '🇬🇭', '🇳🇬'][i] || '🌍',
+    avatar: ['👨🏿‍🦱', '👩🏾‍🦱', '👨🏾', '👩🏿'][i] || '🙂'
+  }))
+
+  return (
+    <div style={{
+      width:'100%',
+      maxWidth:520,
+      margin:'0 auto',
+      minHeight:'100vh',
+      background:'radial-gradient(circle at top,#123b2a,#06130f 65%,#030806)',
+      color:'#fff',
+      padding:8,
+      boxSizing:'border-box',
+      position:'relative',
+      overflow:'hidden'
+    }}>
+      <div style={{
+        display:'grid',
+        gridTemplateColumns:'1fr 1fr',
+        gap:8,
+        marginBottom:6
+      }}>
+        {joueurs.slice(0, 2).map((j) => <CarteJoueurPro key={j.couleur} joueur={j} />)}
+      </div>
+
+      <div style={{
+        position:'relative',
+        width:'100%',
+        aspectRatio:'1 / 1',
+        margin:'0 auto'
+      }}>
+        <PlateauLudo
+          partie={partie}
+          coupsDispo={coupsDispo}
+          onJouerPion={jouerPion}
+          dernierDe={partie.dernierDe}
+          couleurCourante={couleurCourante}
+          deBouge={deBouge}
+          onLancer={lancerAvecAnimation}
+        />
+      </div>
+
+      <div style={{
+        display:'grid',
+        gridTemplateColumns:'1fr 1fr',
+        gap:8,
+        marginTop:6
+      }}>
+        {joueurs.slice(2, 4).map((j) => <CarteJoueurPro key={j.couleur} joueur={j} />)}
+      </div>
+
+    <BarreChatCadeaux
+  onOuvrirChat={onOuvrirChat}
+/>
+    </div>
+  )
 }
 
+function CarteJoueurPro({ joueur }) {
+  return (
+    <div style={{
+      display:'flex',
+      alignItems:'center',
+    gap:5,
+     background:'transparent',
+border:'none',
+borderRadius:0,
+padding:0,
+boxShadow:'none'
+    }}>
+      <div style={{
+       width:32,
+        height:32,
+        borderRadius:'50%',
+        display:'grid',
+        placeItems:'center',
+     fontSize:20,
+        background:'#f7d99b',
+        border:'2px solid #ffd700'
+      }}>
+        {joueur.avatar}
+      </div>
+
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ fontWeight:900, fontSize:11, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+          {joueur.drapeau} {joueur.nom}
+        </div>
+        <div style={{ fontSize:10 }}>🪙 {joueur.pieces.toLocaleString('fr-FR')}</div>
+        <div style={{ fontSize:9}}>🏆 {joueur.trophees}</div>
+        <div style={{ display:'flex', gap:3, marginTop:4 }}>
+          {[0,1,2,3].map((n) => (
+            <span key={n} style={{
+           width:12, 
+              height:12,
+
+              borderRadius:'50%',
+              border:'1px solid #ffd700',
+              opacity:.75
+            }} />
+          ))}
+        </div>
+      </div>
+
+      <button style={{
+       width:30,
+height:30,
+        borderRadius:'50%',
+        border:'2px solid #ffd700',
+        background:'#431014',
+       fontSize:16
+      }}>
+        🎁
+      </button>
+    </div>
+  )
+}
+
+function BarreChatCadeaux({ onOuvrirChat, nouveauxMessages = 0 }) {
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+  const [reaction, setReaction] = useState(null)
+  const [emojiOuvert, setEmojiOuvert] = useState(false)
+async function chargerMessages() {
+  const { data, error } = await supabase
+    .from('messages_partie')
+    .select('*')
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  if (data) {
+    setMessages(
+      data.map(m => ({
+        texte: m.contenu,
+        type: m.type,
+        pseudo: m.pseudo
+      }))
+    )
+  }
+}
+
+useEffect(() => {
+  chargerMessages()
+
+  const channel = supabase
+    .channel('chat-partie')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages_partie'
+      },
+      (payload) => {
+        const msg = payload.new
+
+        setMessages(prev => [
+          ...prev,
+          {
+            texte: msg.contenu,
+            type: msg.type,
+            pseudo: msg.pseudo
+          }
+        ])
+      }
+    )
+    .subscribe()
+
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [])
+  const emojis = ['😂','😎','🔥','🙋🏿‍♂️','👑','🕺🏿','🥁','🍌','🥤','❤️','👏🏿','🤣']
+
+  const envoyerMessage = async () => {
+  if (!message.trim()) return
+
+  const nouveauMessage = {
+    partie_id: 'partie-test',
+    auteur_id: 'joueur-test',
+    pseudo: 'Moi',
+    role: 'joueur',
+    type: 'message',
+    contenu: message
+  }
+
+  const { error } = await supabase
+    .from('messages_partie')
+    .insert([nouveauMessage])
+
+  if (error) {
+    alert(JSON.stringify(error))
+    console.error(error)
+    return
+}
+  setMessages([...messages, { texte: message, type: 'message' }])
+setMessage('')
+}
+  
+
+  const envoyerReaction = (emoji) => {
+    setReaction(emoji)
+    setMessages([...messages, { texte: emoji, type: 'emoji' }])
+    setEmojiOuvert(false)
+
+    setTimeout(() => {
+      setReaction(null)
+    }, 1200)
+  }
+
+  return (
+    <div style={{
+  marginTop:4,
+  position:'relative',
+  zIndex:999999,
+  pointerEvents:'auto'
+}}>
+
+      {reaction && (
+        <div style={{
+          position:'fixed',
+          left:'50%',
+          top:'50%',
+          transform:'translate(-50%,-50%)',
+          fontSize:120,
+          zIndex:999999999,
+          pointerEvents:'none'
+        }}>
+          {reaction}
+        </div>
+      )}
+
+     <div style={{
+  display:'flex',
+  alignItems:'center',
+  gap:8,
+  background:'#081628',
+  border:'1px solid rgba(255,255,255,.12)',
+  borderRadius:22,
+  padding:8,
+  position:'relative',
+  zIndex:999999,
+  pointerEvents:'auto'
+}}>
+      <button
+  type="button"
+  onClick={onOuvrirChat}
+  style={{
+    fontSize:22,
+    background:'transparent',
+    border:0,
+    cursor:'pointer'
+  }}
+>
+  💬
+{nouveauxMessages > 0 && (
+  <span style={st.badgeNotif}>{nouveauxMessages}</span>
+)}        
+</button>
+
+        <input
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') envoyerMessage()
+          }}
+          placeholder="Tape ton message..."
+          style={{
+            flex:1,
+            background:'transparent',
+            border:0,
+            color:'#fff',
+            outline:'none'
+          }}
+        />
+
+        <button
+          type="button"
+          onClick={() => setEmojiOuvert(!emojiOuvert)}
+          style={{ fontSize:24, background:'transparent', border:0, cursor:'pointer' }}
+        >
+          😊
+        </button>
+
+        <button
+          type="button"
+          onClick={envoyerMessage}
+          style={{ fontSize:22, background:'transparent', border:0, cursor:'pointer' }}
+        >
+          ➤
+        </button>
+      </div>
+
+      {emojiOuvert && (
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:'repeat(6, 1fr)',
+          gap:6,
+          marginTop:8,
+          background:'#071827',
+          border:'1px solid rgba(255,215,0,.35)',
+          borderRadius:14,
+          padding:8,
+          zIndex:99999
+        }}>
+          {emojis.map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              onClick={() => envoyerReaction(emoji)}
+              style={{
+                height:40,
+                borderRadius:10,
+                border:'1px solid rgba(255,255,255,.15)',
+                background:'#102442',
+                fontSize:22,
+                cursor:'pointer'
+              }}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 function PageLudo({ onRetour }) {
-  const [phase, setPhase] = useState('config')
-  const [nbJoueurs, setNbJoueurs] = useState(2)
-  const [noms, setNoms] = useState(['Joueur 1', 'Joueur 2', 'Joueur 3', 'Joueur 4'])
+const [phase, setPhase] = useState('config');
+const [nbJoueurs, setNbJoueurs] = useState(2);
+  const [pionBouge, setPionBouge] = useState(false);
+function sonPas() {
+  try {
+    const audio = new Audio('/pas.mp3')
+    audio.volume = 0.35
+    audio.play().catch(() => {})
+  } catch (e) {}
+}
+  const [noms, setNoms] = useState([
+  nomAfricainAuto(),
+  nomAfricainAuto(),
+  nomAfricainAuto(),
+  nomAfricainAuto()
+]); 
   const [partie, setPartie] = useState(null)
   const [coupsDispo, setCoupsDispo] = useState([])
   const [messageTour, setMessageTour] = useState('')
+const [deBouge, setDeBouge] = useState(false)
+const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
+function sonPas() {
+  try {
+    const audio = new Audio('/pas.mp3')
+    audio.volume = 0.35
+    audio.play().catch(() => {})
+  } catch (e) {}
+}
+const faceDe = (n) => {
+  const faces = {
+    1: '⚀',
+    2: '⚁',
+    3: '⚂',
+    4: '⚃',
+    5: '⚄',
+    6: '⚅'
+  }
 
+  return faces[n] || '🎲'
+}
+
+function lancerAvecAnimation() {
+  if (coupsDispo.length > 0 || deBouge) return
+
+  setDeBouge(true)
+
+  setTimeout(() => {
+    lancer()
+    setDeBouge(false)
+  }, 650)
+}
   function demarrer() {
-    const couleursActives = COULEURS_LUDO.slice(0, nbJoueurs)
+   const couleursActives = nbJoueurs === 2
+  ? ['rouge', 'jaune']
+  : COULEURS_LUDO.slice(0, nbJoueurs)
     setPartie(creerPartie(couleursActives))
     setCoupsDispo([])
     setMessageTour('')
     setPhase('jeu')
   }
 
-  function lancer() {
-    if (!partie || coupsDispo.length > 0) return
-    const resultat = lancerDe(partie)
-    setPartie(resultat.partie)
+ async function lancer() {
+  if (!partie || coupsDispo.length > 0 || deBouge) return
 
-    if (resultat.tourAnnule) {
-      setMessageTour(`3 six d'affilée → tour annulé, au suivant !`)
-      setCoupsDispo([])
-    } else if (resultat.aucunCoup) {
-      setMessageTour(`Dé : ${resultat.valeur} — aucun coup possible, au suivant.`)
-      setCoupsDispo([])
-    } else {
-      setMessageTour(`Dé : ${resultat.valeur} — choisis un pion à jouer.`)
-      setCoupsDispo(resultat.coups)
+  setDeBouge(true)
+  setMessageTour('Le dé tourne...')
+
+  await new Promise((resolve) => setTimeout(resolve, 900))
+
+  const resultat = lancerDe(partie)
+  setDeBouge(false)
+  setPartie(resultat.partie)
+
+  if (resultat.tourAnnule) {
+    setMessageTour('3 six d’affilée → tour annulé, au suivant :-')
+    setCoupsDispo([])
+  } else if (resultat.aucunCoup) {
+    setMessageTour(`Dé : ${resultat.valeur} — aucun coup possible, au suivant :-`)
+    setCoupsDispo([])
+  } else {
+    setMessageTour(`Dé : ${resultat.valeur} — choisis un pion à jouer.`)
+    setCoupsDispo(resultat.coups)
+  }
+}
+
+async function jouerPion(index) {
+  if (!partie || !partie.dernierDe || pionBouge) return
+
+  setPionBouge(true)
+
+  const valeur = partie.dernierDe
+  const couleur = partie.couleurs[partie.tourActuel]
+  const pionDepart = partie.pions[couleur][index]
+  let nouvellePartie = jouerCoup(partie, index, valeur)
+
+  let partieAnimee = JSON.parse(JSON.stringify(partie))
+
+  for (let pas = 1; pas <= valeur; pas++) {
+    let pionAnime = { ...pionDepart }
+
+    if (pionDepart.etat === 'base') {
+      pionAnime = { etat: 'parcours', position: 0 }
+    } else if (pionDepart.etat === 'parcours') {
+      const pos = pionDepart.position + pas
+      if (pos < 51) pionAnime = { etat: 'parcours', position: pos }
+      else pionAnime = { etat: 'couloir', position: 0 }
+    } else if (pionDepart.etat === 'couloir') {
+      const pos = pionDepart.position + pas
+      if (pos < 5) pionAnime = { etat: 'couloir', position: pos }
+      else pionAnime = { etat: 'arrivee', position: 5 }
     }
+
+    partieAnimee = {
+      ...partieAnimee,
+      pions: {
+        ...partieAnimee.pions,
+        [couleur]: partieAnimee.pions[couleur].map((p, i) =>
+          i === index ? pionAnime : p
+        )
+      }
+    }
+
+    setPartie(partieAnimee)
+    sonPas()
+    await new Promise((resolve) => setTimeout(resolve, 260))
   }
 
-  function jouerPion(index) {
-    if (!partie || !partie.dernierDe) return
-    let nouvellePartie = jouerCoup(partie, index, partie.dernierDe)
-
-    if (nouvellePartie.vainqueur) {
-      setPartie(nouvellePartie)
-      setCoupsDispo([])
-      setPhase('fini')
-      return
-    }
-
-    if (!nouvellePartie.doitRejouer) {
-      nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
-      setMessageTour('')
-    } else {
-      setMessageTour('Tu rejoues !')
-    }
+  if (nouvellePartie.vainqueur) {
     setPartie(nouvellePartie)
     setCoupsDispo([])
+    setPhase('fini')
+    setPionBouge(false)
+    return
   }
 
-  function rejouerPartie() {
-    setPartie(null)
-    setPhase('config')
+  if (!nouvellePartie.doitRejouer) {
+    nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
+    setMessageTour('')
+  } else {
+    setMessageTour('Tu rejoues !')
   }
+
+  setPartie(nouvellePartie)
+  setCoupsDispo([])
+  setPionBouge(false)
+}
+
+ 
 
   const couleurCourante = partie?.couleurs[partie.tourActuel]
   const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
@@ -655,7 +1364,7 @@ function PageLudo({ onRetour }) {
     <div style={st.page}>
       <div style={st.enteteChat}>
         <button onClick={onRetour} style={st.retour}>←</button>
-        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Ludo</span>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Déwari</span>
       </div>
 
       {phase === 'config' && (
@@ -701,42 +1410,33 @@ function PageLudo({ onRetour }) {
         </div>
       )}
 
-      {phase === 'jeu' && partie && (
-        <div style={st.section}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-            {partie.couleurs.map((couleur, i) => (
-              <div
-                key={couleur}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 14,
-                  background: i === partie.tourActuel ? '#2a2050' : '#1d1a35',
-                  border: i === partie.tourActuel ? `1px solid ${HEX_COULEUR[couleur]}` : 'none',
-                }}
-              >
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: HEX_COULEUR[couleur] }} />
-                <span style={{ fontSize: 12, fontWeight: 700 }}>{noms[i]}</span>
-              </div>
-            ))}
-          </div>
+{phase === 'jeu' && partie && (
+  <>
+    <InterfaceLudoPro
+      partie={partie}
+      noms={noms}
+      indexCourant={indexCourant}
+      couleurCourante={couleurCourante}
+      coupsDispo={coupsDispo}
+      deBouge={deBouge}
+      lancerAvecAnimation={lancerAvecAnimation}
+      jouerPion={jouerPion}
+      onOuvrirChat={() => setChatJeuOuvert(true)}
+    />
 
-          <div style={st.ludoPlateauWrap}>
-            <PlateauLudo partie={partie} coupsDispo={coupsDispo} onJouerPion={jouerPion} />
-          </div>
-
-          <div style={st.zoneDe}>
-            {messageTour && <div style={{ fontSize: 13, color: '#cfc9e6', marginBottom: 10 }}>{messageTour}</div>}
-            <div style={{ fontWeight: 800, fontSize: 15 }}>
-              Au tour de <span style={{ color: HEX_COULEUR[couleurCourante] }}>{noms[indexCourant]}</span>
-            </div>
-            <button onClick={lancer} disabled={coupsDispo.length > 0} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
-              {coupsDispo.length > 0 ? 'Choisis un pion sur le plateau' : 'Lancer le dé'}
-            </button>
-          </div>
-        </div>
-      )}
+    <ChatJeu
+      partieId={partie?.id || 'partie-test'}
+      pseudo={noms[indexCourant] || 'Joueur'}
+      ouvert={chatJeuOuvert}
+      fermer={() => setChatJeuOuvert(false)}
+      onNouveauMessage={() => setNouveauxMessages((n) => n + 1)}
+    />
+  </>
+)}
 
       {phase === 'fini' && partie?.vainqueur && (
-        <div style={st.section}>
+      
+  <div style={st.section}>
           <div style={st.zoneDe}>
             <div style={{ fontSize: 48 }}>🏆</div>
             <div style={{ fontSize: 20, fontWeight: 800, marginTop: 10 }}>
@@ -748,9 +1448,7 @@ function PageLudo({ onRetour }) {
       )}
     </div>
   )
-}
-
-function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour }) {
+}  function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour }) {
   const [compte, setCompte] = useState(calculCompte(tournoi?.date_debut))
 
   useEffect(() => {
@@ -920,7 +1618,6 @@ function ChatSalon({ salon, membre, onRetour }) {
   useEffect(() => {
     chargerMessages()
     chargerNbMembres()
-
     const canal = supabase
       .channel(`salon-${salon.id}`, { config: { presence: { key: membre.id } } })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `salon_id=eq.${salon.id}` }, (payload) => {
@@ -938,7 +1635,6 @@ function ChatSalon({ salon, membre, onRetour }) {
         }, 2000)
       })
       .subscribe()
-
     canalRef.current = canal
     return () => supabase.removeChannel(canal)
   }, [salon.id])
@@ -1083,11 +1779,11 @@ function ChatSalon({ salon, membre, onRetour }) {
           return (
             <div key={m.id} style={{ ...st.bulle, alignSelf: moi ? 'flex-end' : 'flex-start', background: moi ? 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' : '#23203a', color: '#fff' }}>
               {!moi && <div style={{ fontSize: 11, fontWeight: 800, color: '#FFB800' }}>{m.membres?.pseudo || '...'}</div>}
-              {m.image_url ? (
-                <img src={m.image_url} alt="photo" style={st.imageMsg} />
-              ) : (
-                m.contenu
-              )}
+           {m.image_url ? (
+  <img src={m.image_url} alt="photo" style={st.imageMsg} />
+) : (
+  <span>{m.texte || m.contenu}</span>
+)}
             </div>
           )
         })}
@@ -1111,8 +1807,22 @@ function ChatSalon({ salon, membre, onRetour }) {
 }
 
 const st = {
-  page: { maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: '#16142a', fontFamily: "'Poppins', sans-serif", display: 'flex', flexDirection: 'column', boxSizing: 'border-box', color: '#fff' },
-  barreNom: { textAlign: 'center', padding: '14px 0 0', fontWeight: 800, fontSize: 16, letterSpacing: 0.5, color: '#fff' },
+ page: {
+  maxWidth: 430,
+  margin: '0 auto',
+  minHeight: '100vh',
+  background:
+    'radial-gradient(circle at top, rgba(34,139,34,0.45), transparent 35%), linear-gradient(135deg, #06140b 0%, #102b16 45%, #020705 100%)',
+  fontFamily: "'Poppins', sans-serif",
+  display: 'flex',
+  flexDirection: 'column',
+  boxSizing: 'border-box',
+  color: '#fff',
+  position: 'relative',
+  overflow: 'hidden',
+  padding: '14px 10px',
+},
+   barreNom: { textAlign: 'center', padding: '14px 0 0', fontWeight: 800, fontSize: 16, letterSpacing: 0.5, color: '#fff' },
   navWrap: { display: 'flex', gap: 8, overflowX: 'auto', padding: '12px 16px 4px', WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory', scrollBehavior: 'smooth' },
   navBouton: { flexShrink: 0, padding: '8px 14px', borderRadius: 20, background: '#221f3b', color: '#cfc9e6', border: 'none', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', scrollSnapAlign: 'start' },
   avatarGroupe: { width: 38, height: 38, borderRadius: '50%', background: 'linear-gradient(135deg,#FFB800,#FF4D6D)', color: '#1d1a35', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 12, flexShrink: 0 },
@@ -1139,10 +1849,34 @@ const st = {
   carteCompte: { display: 'flex', alignItems: 'center', background: '#1d1a35', borderRadius: 14, padding: 14, marginTop: 14 },
   carteDe: { display: 'flex', alignItems: 'center', padding: '16px', borderRadius: 16, background: 'linear-gradient(135deg,#3A0CA3,#7B2CBF)', cursor: 'pointer' },
   carteLudo: { display: 'flex', alignItems: 'center', padding: '16px', borderRadius: 16, background: 'linear-gradient(135deg,#23A559,#3A86FF)', cursor: 'pointer', marginTop: 10 },
-  ludoPlateauWrap: { display: 'flex', justifyContent: 'center', background: '#0f0d20', borderRadius: 16, padding: 10 },
+ ludoPlateauWrap: {
+  background: `
+    radial-gradient(circle at center, rgba(34,139,34,0.25), transparent 45%),
+    linear-gradient(145deg,#2d1b0f,#1a120b,#0e1f12)
+  `,
+  padding: 18,
+  borderRadius: 32,
+  border: '4px solid #D4AF37',
+  boxShadow:
+    '0 0 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(212,175,55,0.15)',
+  position: 'relative',
+  overflow: 'hidden',
+},
+jungleDecoration: {
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  opacity: 0.15,
+  backgroundImage:
+    'url("https://www.transparenttextures.com/patterns/leaves.png")',
+},
   ludoSvg: { width: '100%', maxWidth: 340, height: 'auto' },
   carteDeEmoji: { fontSize: 32 },
   zoneDe: { display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', background: '#1d1a35', borderRadius: 16, padding: '24px 18px', marginTop: 18 },
+  deCube: { width: 88, height: 88, borderRadius: 18, background: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)', boxShadow: '0 6px 18px rgba(123,44,191,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 14 },
+  deGrille: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(3, 1fr)', width: '100%', height: '100%' },
+  dePipCase: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  dePip: { width: 12, height: 12, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' },
   regleDe: { fontSize: 13, color: '#cfc9e6', background: '#1d1a35', borderRadius: 12, padding: 12, marginTop: 18, lineHeight: 1.5 },
   bandeauWave: { background: '#1f3a2e', color: '#7CFFB2', fontSize: 12.5, padding: '8px 16px', textAlign: 'center', borderBottom: '1px solid #2a2745' },
   overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, padding: 16 },
