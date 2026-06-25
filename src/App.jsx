@@ -1414,12 +1414,14 @@ async function jouerPion(index) {
       pseudo={noms[indexCourant] || 'Joueur'}
       ouvert={chatJeuOuvert}
       fermer={() => setChatJeuOuvert(false)}
+      onNouveauMessage={() => setNouveauxMessages((n) => n + 1)}
     />
   </>
 )}
 
       {phase === 'fini' && partie?.vainqueur && (
-        <div style={st.section}>
+      
+  <div style={st.section}>
           <div style={st.zoneDe}>
             <div style={{ fontSize: 48 }}>🏆</div>
             <div style={{ fontSize: 20, fontWeight: 800, marginTop: 10 }}>
