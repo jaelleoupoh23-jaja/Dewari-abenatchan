@@ -434,64 +434,80 @@ const PIPS_POSITIONS = {
 
 function De3D({ valeur, tourne, onClick, inclinaison = 0 }) {
   const pips = PIPS_POSITIONS[valeur] || []
-  const angle = inclinaison === 0 ? 'rotate(-8deg) rotateY(-15deg)' : 'rotate(6deg) rotateY(12deg)'
+  const repos = inclinaison === 0
+    ? 'rotate(-8deg) rotateY(-18deg) rotateX(6deg)'
+    : 'rotate(6deg) rotateY(14deg) rotateX(-4deg)'
 
   return (
     <div
       onClick={onClick}
       style={{
-        width: 120,
-        height: 120,
+        width: 130,
+        height: 130,
         position: 'relative',
         cursor: 'pointer',
-        perspective: 400,
-        animation: tourne ? 'de3dSpin 0.9s cubic-bezier(0.25,0.46,0.45,0.94)' : 'none',
-        transform: tourne ? 'none' : angle,
-        transition: 'transform 0.4s ease',
         flexShrink: 0,
+        transform: tourne ? 'none' : repos,
+        animation: tourne ? 'de3dSpin 0.95s cubic-bezier(0.22,1,0.36,1) forwards' : 'none',
+        filter: tourne ? 'drop-shadow(0 0 18px rgba(255,75,109,0.85))' : 'drop-shadow(0 8px 16px rgba(0,0,0,0.45))',
+        transition: 'transform 0.5s ease, filter 0.3s ease',
       }}
     >
-      {/* Face avant (principale) */}
+      {/* Face avant */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        borderRadius: 20,
-        background: 'linear-gradient(145deg, #fffff8 0%, #f5f0e8 40%, #e8e0d0 100%)',
-        boxShadow: tourne
-          ? `0 0 60px rgba(255,75,109,0.9), 0 0 30px rgba(255,184,0,0.5), 8px 8px 0 #aaa, 14px 14px 0 #888`
-          : `4px 4px 0 #ccc, 8px 8px 0 #aaa, 12px 12px 0 #888, inset 0 2px 4px rgba(255,255,255,0.9), inset -2px -2px 4px rgba(0,0,0,0.08)`,
-        transition: 'box-shadow 0.3s',
+        borderRadius: 24,
+        background: 'linear-gradient(145deg, #fffff5 0%, #f8f2e6 35%, #ede4d0 100%)',
+        boxShadow: [
+          'inset 0 2px 6px rgba(255,255,255,0.95)',
+          'inset -3px -3px 8px rgba(0,0,0,0.12)',
+          '0 4px 0 #c8bfaf',
+          '0 8px 0 #b0a898',
+          '0 12px 0 #9a9080',
+          '0 16px 24px rgba(0,0,0,0.4)',
+        ].join(', '),
         zIndex: 3,
+        overflow: 'hidden',
       }}>
-        {/* Reflet haut gauche */}
+        {/* Reflet principal */}
         <div style={{
           position: 'absolute',
-          top: 8, left: 8,
-          width: '55%', height: '30%',
+          top: 6, left: 8,
+          width: '60%', height: '32%',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%)',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%)',
-          transform: 'rotate(-15deg)',
+          transform: 'rotate(-20deg)',
           pointerEvents: 'none',
           zIndex: 5,
         }} />
-        {/* Reflet bas droite (secondary) */}
+        {/* Reflet secondaire bas */}
         <div style={{
           position: 'absolute',
-          bottom: 10, right: 10,
-          width: '30%', height: '15%',
+          bottom: 8, right: 10,
+          width: '25%', height: '12%',
+          background: 'rgba(255,255,255,0.35)',
           borderRadius: '50%',
-          background: 'rgba(255,255,255,0.4)',
           pointerEvents: 'none',
           zIndex: 5,
+        }} />
+        {/* Rim light bords */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: 24,
+          boxShadow: 'inset 0 0 0 1.5px rgba(255,255,255,0.6)',
+          pointerEvents: 'none',
+          zIndex: 6,
         }} />
         {/* Points */}
         {pips.map(([x, y], i) => (
           <div key={i} style={{
             position: 'absolute',
-            width: 16, height: 16,
+            width: 17, height: 17,
             borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 25%, #ff8fa0, #CC0020 60%, #8B0010)',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,180,180,0.4)',
+            background: 'radial-gradient(circle at 35% 25%, #ff9aaa 0%, #e60026 50%, #8b0010 100%)',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.55), inset 0 1px 2px rgba(255,180,180,0.35), 0 0 4px rgba(220,0,30,0.4)',
             left: `${x}%`, top: `${y}%`,
             transform: 'translate(-50%, -50%)',
             zIndex: 4,
@@ -499,29 +515,28 @@ function De3D({ valeur, tourne, onClick, inclinaison = 0 }) {
         ))}
       </div>
 
-      {/* Face dessus (bord supérieur 3D) */}
+      {/* Face dessus */}
       <div style={{
         position: 'absolute',
-        top: -10, left: 6,
-        right: 6,
-        height: 14,
-        borderRadius: '8px 8px 0 0',
-        background: 'linear-gradient(180deg, #ffffff 0%, #ddd8cc 100%)',
-        transform: 'rotateX(45deg)',
+        top: -12, left: 8, right: 8,
+        height: 16,
+        background: 'linear-gradient(180deg, #ffffff 0%, #e8e0d0 100%)',
+        borderRadius: '10px 10px 0 0',
+        transform: 'rotateX(50deg)',
         transformOrigin: 'bottom center',
         zIndex: 2,
-        boxShadow: '0 -2px 4px rgba(255,255,255,0.6)',
+        boxShadow: '0 -2px 6px rgba(255,255,255,0.5)',
       }} />
 
-      {/* Face côté droit (bord latéral 3D) */}
+      {/* Face côté droit */}
       <div style={{
         position: 'absolute',
-        top: 6, right: -10,
-        bottom: 6,
-        width: 14,
-        borderRadius: '0 8px 8px 0',
-        background: 'linear-gradient(270deg, #b0a898 0%, #d8d0c4 100%)',
-        transform: 'rotateY(45deg)',
+        top: 8, right: -12,
+        bottom: 8,
+        width: 16,
+        background: 'linear-gradient(270deg, #9a9080 0%, #c8c0b0 100%)',
+        borderRadius: '0 10px 10px 0',
+        transform: 'rotateY(50deg)',
         transformOrigin: 'left center',
         zIndex: 2,
       }} />
@@ -529,11 +544,11 @@ function De3D({ valeur, tourne, onClick, inclinaison = 0 }) {
       {/* Ombre sol */}
       <div style={{
         position: 'absolute',
-        bottom: -18, left: '10%',
-        width: '80%', height: 12,
+        bottom: -22, left: '5%',
+        width: '90%', height: 14,
         borderRadius: '50%',
-        background: 'rgba(0,0,0,0.25)',
-        filter: 'blur(6px)',
+        background: 'rgba(0,0,0,0.28)',
+        filter: 'blur(8px)',
         zIndex: 1,
       }} />
     </div>
@@ -565,15 +580,16 @@ function PageDe({ onRetour }) {
   return (
     <div style={st.page}>
       <style>{`
-      @keyframes de3dSpin {
-  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg)   scale(1); }
-  20%  { transform: rotateX(200deg) rotateY(120deg) rotateZ(60deg)  scale(1.15); }
-  45%  { transform: rotateX(380deg) rotateY(240deg) rotateZ(120deg) scale(1.2); }
-  65%  { transform: rotateX(520deg) rotateY(320deg) rotateZ(180deg) scale(1.15); }
-  80%  { transform: rotateX(660deg) rotateY(380deg) rotateZ(220deg) scale(1.08); }
-  90%  { transform: rotateX(710deg) rotateY(350deg) rotateZ(355deg) scale(1.03); }
-  95%  { transform: rotateX(725deg) rotateY(358deg) rotateZ(362deg) scale(1.01); }
-  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg) scale(1); }
+     @keyframes de3dSpin {
+  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg)   scale(1);    }
+  15%  { transform: rotateX(220deg) rotateY(130deg) rotateZ(70deg)  scale(1.14); }
+  35%  { transform: rotateX(400deg) rotateY(250deg) rotateZ(140deg) scale(1.20); }
+  55%  { transform: rotateX(560deg) rotateY(330deg) rotateZ(190deg) scale(1.16); }
+  72%  { transform: rotateX(670deg) rotateY(370deg) rotateZ(230deg) scale(1.09); }
+  85%  { transform: rotateX(705deg) rotateY(352deg) rotateZ(348deg) scale(1.04); }
+  93%  { transform: rotateX(718deg) rotateY(357deg) rotateZ(358deg) scale(1.01); }
+  97%  { transform: rotateX(722deg) rotateY(361deg) rotateZ(362deg) scale(0.99); }
+  100% { transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg) scale(1);    }
 }
         @keyframes totalAppear {
           0%   { opacity: 0; transform: scale(0.4) translateY(16px); }
@@ -608,7 +624,7 @@ function PageDe({ onRetour }) {
           perspective: 700,
           marginBottom: 44,
         }}>
-        <De3D valeur={val1} tourne={tourne} onClick={lancer} inclinaison={0} />
+     <De3D valeur={val1} tourne={tourne} onClick={lancer} inclinaison={0} />
 <De3D valeur={val2} tourne={tourne} onClick={lancer} inclinaison={1} />
         </div>
 
