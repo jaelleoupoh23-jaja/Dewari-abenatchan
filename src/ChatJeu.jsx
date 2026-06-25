@@ -25,10 +25,12 @@ export default function ChatJeu({ partieId, pseudo = 'Joueur', ouvert, fermer })
 
     const nouveauMessage = {
       partie_id: partieId,
-      pseudo,
-      type: 'message',
-      contenu: message.trim()
-    }
+  auteur_id: pseudo,
+  pseudo,
+  type: 'message',
+  contenu: message.trim()
+}
+  
 const { error } = await supabase
   .from('messages_partie')
   .insert([nouveauMessage])
@@ -51,11 +53,12 @@ async function envoyerPreset(txt) {
   if (!txt) return
 
   const nouveauMessage = {
-    partie_id: partieId,
-    pseudo,
-    type: 'message',
-    contenu: txt
-  }
+  partie_id: partieId,
+  auteur_id: pseudo,
+  pseudo,
+  type: 'message',
+  contenu: txt
+}
 
 const { error } = await supabase
   .from('messages_partie')
