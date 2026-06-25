@@ -36,7 +36,7 @@ export default function ChatJeu({ partieId, pseudo = 'Joueur', ouvert, fermer })
 
     if (!error) setMessage('')
   }
-aasync function envoyerPreset(txt) {
+async function envoyerPreset(txt) {
   if (!txt) return
 
   const nouveauMessage = {
