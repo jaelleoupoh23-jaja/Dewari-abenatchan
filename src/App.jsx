@@ -849,8 +849,6 @@ fontSize="13"
   )
 } 
 
-{phase === 'jeu' && partie && (
-  <>
 function InterfaceLudoPro({
   partie,
   noms,
