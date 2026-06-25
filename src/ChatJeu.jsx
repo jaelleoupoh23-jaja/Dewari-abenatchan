@@ -62,7 +62,8 @@ const { error } = await supabase
   .insert([nouveauMessage])
 
 if (error) {
-  alert('Message non envoyé')
+ alert(error.message)
+console.log(error)
   return
 }
 
