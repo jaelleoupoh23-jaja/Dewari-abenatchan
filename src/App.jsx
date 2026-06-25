@@ -575,7 +575,9 @@ const points = valeur === 6 ? 1.5 : valeur
           </div>
 
           <div style={st.zoneDe}>   <div style={st.robotBox}>     🤖{enTrainDeLancer ? 'Le dé tourne...' : 'À moi la victoire !'}   </div>
-            <FaceDe valeur={valeurAffichee} enTrain={enTrainDeLancer} />
+           <div style={{ fontSize: 52 }}>
+  {faceDe(valeurAffichee)}
+</div>
             {dernierLancer && !enTrainDeLancer && (
               <div style={{ fontSize: 13, color: '#9a93b5', marginTop: 12 }}>
                 {noms[dernierLancer.joueur]} a fait {dernierLancer.valeur} → +{dernierLancer.points} pt{dernierLancer.points > 1 ? 's' : ''}
