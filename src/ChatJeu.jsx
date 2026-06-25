@@ -29,13 +29,23 @@ export default function ChatJeu({ partieId, pseudo = 'Joueur', ouvert, fermer })
       type: 'message',
       contenu: message.trim()
     }
+const { error } = await supabase
+  .from('messages_partie')
+  .insert([nouveauMessage])
 
-    const { error } = await supabase
-      .from('messages_partie')
-      .insert([nouveauMessage])
+if (error) {
+  alert('Message non envoyé')
+  return
+}
 
-    if (!error) setMessage('')
+setMessages((prev) => [
+  ...prev,
+  {
+    ...nouveauMessage,
+    id: Date.now()
   }
+]) 
+}   
 async function envoyerPreset(txt) {
   if (!txt) return
 
@@ -46,19 +56,22 @@ async function envoyerPreset(txt) {
     contenu: txt
   }
 
-  const { data, error } = await supabase
-    .from('messages_partie')
-    .insert([nouveauMessage])
-    .select()
-    .single()
+const { error } = await supabase
+  .from('messages_partie')
+  .insert([nouveauMessage])
 
-  if (error) {
-    alert('Message non envoyé')
-    return
-  }
-
-  setMessages((prev) => [...prev, data])
+if (error) {
+  alert('Message non envoyé')
+  return
 }
+
+setMessages((prev) => [
+  ...prev,
+  {
+    ...nouveauMessage,
+    id: Date.now()
+  }
+])
   useEffect(() => {
    if (!ouvert || !partieId) return
 
