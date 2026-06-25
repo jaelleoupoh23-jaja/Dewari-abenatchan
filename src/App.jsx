@@ -1738,11 +1738,11 @@ function ChatSalon({ salon, membre, onRetour }) {
           return (
             <div key={m.id} style={{ ...st.bulle, alignSelf: moi ? 'flex-end' : 'flex-start', background: moi ? 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' : '#23203a', color: '#fff' }}>
               {!moi && <div style={{ fontSize: 11, fontWeight: 800, color: '#FFB800' }}>{m.membres?.pseudo || '...'}</div>}
-              {m.image_url ? (
-                <img src={m.image_url} alt="photo" style={st.imageMsg} />
-              ) : (
-              {m.texte || m.contenu}
-              )}
+           {m.image_url ? (
+  <img src={m.image_url} alt="photo" style={st.imageMsg} />
+) : (
+  <span>{m.texte || m.contenu}</span>
+)}
             </div>
           )
         })}
