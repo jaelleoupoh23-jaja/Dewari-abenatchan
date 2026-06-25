@@ -72,6 +72,7 @@ setMessages((prev) => [
     id: Date.now()
   }
 ])
+  }
   useEffect(() => {
    if (!ouvert || !partieId) return
 
