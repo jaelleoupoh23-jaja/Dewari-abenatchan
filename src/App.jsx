@@ -1367,6 +1367,127 @@ function PetitDeLudo({ valeur, anime }) {
     </div>
   )
 }
+function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }) {
+  const [partie, setPartie] = useState(partieInitiale)
+  const [coupsDispo, setCoupsDispo] = useState([])
+  const [deBouge, setDeBouge] = useState(false)
+  const [pionBouge, setPionBouge] = useState(false)
+  const [messageTour, setMessageTour] = useState('')
+  const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
+
+  const couleurCourante = partie?.couleurs[partie.tourActuel]
+  const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
+  const noms = partie?.couleurs || []
+  const estMonTour = couleurCourante === monRole
+
+  // Écoute les mises à jour distantes
+  useEffect(() => {
+    const canal = ecouterPartie(partieId, (nouvelEtat) => {
+      if (nouvelEtat.etat_partie) {
+        setPartie(nouvelEtat.etat_partie)
+        setCoupsDispo([])
+      }
+    })
+    return () => supabase.removeChannel(canal)
+  }, [partieId])
+
+  function sonPas() {
+    try {
+      const audio = new Audio('/pas.mp3')
+      audio.volume = 0.35
+      audio.play().catch(() => {})
+    } catch (e) {}
+  }
+
+  async function lancerAvecAnimation() {
+    if (!estMonTour || coupsDispo.length > 0 || deBouge) return
+    setDeBouge(true)
+    setTimeout(async () => {
+      await lancer()
+      setDeBouge(false)
+    }, 650)
+  }
+
+  async function lancer() {
+    if (!partie || coupsDispo.length > 0) return
+    const resultat = lancerDe(partie)
+    const nouvellePartie = resultat.partie
+
+    if (resultat.tourAnnule) {
+      const suite = passerAuJoueurSuivant(nouvellePartie)
+      await sauvegarderEtat(partieId, suite)
+      setPartie(suite)
+      setCoupsDispo([])
+      setMessageTour('3 six → tour annulé')
+    } else if (resultat.aucunCoup) {
+      const suite = passerAuJoueurSuivant(nouvellePartie)
+      await sauvegarderEtat(partieId, suite)
+      setPartie(suite)
+      setCoupsDispo([])
+      setMessageTour(`Dé : ${resultat.valeur} — aucun coup`)
+    } else {
+      await sauvegarderEtat(partieId, nouvellePartie)
+      setPartie(nouvellePartie)
+      setCoupsDispo(resultat.coups)
+      setMessageTour(`Dé : ${resultat.valeur} — choisis un pion`)
+    }
+  }
+
+  async function jouerPion(index) {
+    if (!partie || !partie.dernierDe || pionBouge || !estMonTour) return
+    setPionBouge(true)
+    const valeur = partie.dernierDe
+    const couleur = partie.couleurs[partie.tourActuel]
+    let nouvellePartie = jouerCoup(partie, index, valeur)
+
+    if (!nouvellePartie.doitRejouer) {
+      nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
+    }
+
+    await sauvegarderEtat(partieId, nouvellePartie)
+    setPartie(nouvellePartie)
+    setCoupsDispo([])
+    setPionBouge(false)
+    sonPas()
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 999, background: '#06130f', overflowY: 'auto' }}>
+      <div style={st.enteteChat}>
+        <button onClick={onRetour} style={st.retour}>←</button>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 15 }}>
+          🌍 En ligne · {estMonTour ? '🟢 Ton tour' : `⏳ Tour de ${couleurCourante}`}
+        </span>
+      </div>
+
+      {messageTour ? (
+        <div style={{ textAlign: 'center', fontSize: 13, color: '#FFB800', padding: '6px 0' }}>
+          {messageTour}
+        </div>
+      ) : null}
+
+      <InterfaceLudoPro
+        partie={partie}
+        noms={noms}
+        indexCourant={indexCourant}
+        couleurCourante={couleurCourante}
+        coupsDispo={estMonTour ? coupsDispo : []}
+        deBouge={deBouge}
+        lancerAvecAnimation={lancerAvecAnimation}
+        jouerPion={jouerPion}
+        onOuvrirChat={() => setChatJeuOuvert(true)}
+      />
+
+      <ChatJeu
+        partieId={partieId}
+        pseudo={pseudo}
+        ouvert={chatJeuOuvert}
+        fermer={() => setChatJeuOuvert(false)}
+        onNouveauMessage={() => {}}
+      />
+    </div>
+  )
+}
 function PageMultijoueur({ onRetour }) {
   const [phase, setPhase] = useState('menu')
   const [code, setCode] = useState('')
@@ -1577,7 +1698,17 @@ function PageMultijoueur({ onRetour }) {
             )}
           </div>
         )}
-      </div>
+    </div>
+
+      {phase === 'jeu' && partieEnCours && (
+        <PageLudoEnLigne
+          partieInitiale={partieEnCours}
+          partieId={code}
+          monRole={monRole}
+          pseudo={pseudo}
+          onRetour={onRetour}
+        />
+      )}
     </div>
   )
 }
