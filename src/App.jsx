@@ -1374,11 +1374,36 @@ function PageMultijoueur({ onRetour }) {
   const [erreur, setErreur] = useState('')
   const [occupe, setOccupe] = useState(false)
   const [pseudo] = useState(() => getPseudo())
+  const [nbJoueurs, setNbJoueurs] = useState(2)
+  const [joueurs, setJoueurs] = useState([])
+
+  useEffect(() => {
+    if (!code) return
+    chargerJoueurs()
+    const canal = supabase
+      .channel(`joueurs-${code}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'joueurs_partie',
+        filter: `partie_id=eq.${code}`,
+      }, () => chargerJoueurs())
+      .subscribe()
+    return () => supabase.removeChannel(canal)
+  }, [code])
+
+  async function chargerJoueurs() {
+    const { data } = await supabase
+      .from('joueurs_partie')
+      .select('*')
+      .eq('partie_id', code)
+    setJoueurs(data || [])
+  }
 
   async function handleCreer() {
     setOccupe(true)
     setErreur('')
-    const res = await creerSalon(2, 'rouge')
+    const res = await creerSalon(nbJoueurs)
     if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
     setCode(res.code)
     setPhase('attente')
@@ -1408,8 +1433,26 @@ function PageMultijoueur({ onRetour }) {
           Ton pseudo : <strong style={{ color: '#FFB800' }}>{pseudo}</strong>
         </div>
 
-        {phase === 'menu' && (
+       {phase === 'menu' && (
           <>
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 8 }}>Nombre de joueurs :</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[2, 4].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setNbJoueurs(n)}
+                    style={{
+                      ...st.ongletAuth,
+                      flex: 1,
+                      ...(nbJoueurs === n ? st.ongletActif : {})
+                    }}
+                  >
+                    {n} joueurs
+                  </button>
+                ))}
+              </div>
+            </div>
             <button
               onClick={handleCreer}
               disabled={occupe}
@@ -1439,7 +1482,7 @@ function PageMultijoueur({ onRetour }) {
           </>
         )}
 
-        {phase === 'attente' && (
+      {phase === 'attente' && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 8 }}>Code de ton salon :</div>
             <div style={{
@@ -1454,10 +1497,46 @@ function PageMultijoueur({ onRetour }) {
             }}>
               {code}
             </div>
-            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 24 }}>
-              Partage ce code à ton adversaire.<br />En attente qu'il rejoigne...
+            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 16 }}>
+              Partage ce code à ton adversaire.
             </div>
-            <div style={{ fontSize: 28, animation: 'hintPulse 1.5s ease-in-out infinite' }}>⏳</div>
+            <div style={{
+              background: '#1d1a35',
+              borderRadius: 14,
+              padding: '12px 16px',
+              marginBottom: 16,
+              textAlign: 'left',
+            }}>
+              <div style={{ fontSize: 12, color: '#9a93b5', marginBottom: 8 }}>
+                Joueurs connectés ({joueurs.length}/{nbJoueurs}) :
+              </div>
+              {joueurs.map((j) => (
+                <div key={j.id} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  marginBottom: 6,
+                }}>
+                  <div style={{
+                    width: 12, height: 12,
+                    borderRadius: '50%',
+                    background: HEX_COULEUR[j.couleur] || '#fff',
+                    flexShrink: 0,
+                  }} />
+                  <span style={{ fontSize: 13, color: '#fff' }}>{j.pseudo}</span>
+                  {j.pseudo === pseudo && (
+                    <span style={{ fontSize: 11, color: '#FFB800' }}>(toi)</span>
+                  )}
+                </div>
+              ))}
+            </div>
+            {joueurs.length < nbJoueurs ? (
+              <div style={{ fontSize: 28, animation: 'hintPulse 1.5s ease-in-out infinite' }}>⏳</div>
+            ) : (
+              <button style={{ ...st.boutonPrincipal }}>
+                🚀 Tout le monde est là — Lancer la partie
+              </button>
+            )}
           </div>
         )}
       </div>
