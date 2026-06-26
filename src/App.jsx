@@ -795,7 +795,7 @@ const totem = {
           </text>
        </g>
     
-})}
+)}
 
       {CASES_PARCOURS.map(([r, c], i) => (
         <rect
