@@ -96,7 +96,7 @@ export async function sauvegarderEtat(partieId, etatPartie) {
 }
 
 // Écoute les changements d'état en temps réel
-export function ecouterPartie(partieId, callback) {
+export function ecouterPartie(partieId, callback) {  
   return supabase
     .channel(`partie-${partieId}`)
     .on(
@@ -110,4 +110,15 @@ export function ecouterPartie(partieId, callback) {
       (payload) => callback(payload.new)
     )
     .subscribe()
+}
+// Démarre la partie : sauvegarde l'état initial et passe etat à 'en_cours'
+export async function demarrerPartieEnLigne(partieId, etatInitial) {
+  const { error } = await supabase
+    .from('parties_en_ligne')
+    .update({
+      etat: 'en_cours',
+      etat_partie: etatInitial,
+    })
+    .eq('id', partieId)
+  return error ? { erreur: error.message } : { ok: true }
 }
