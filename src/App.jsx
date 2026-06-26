@@ -1379,17 +1379,36 @@ function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }
   const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
   const noms = partie?.couleurs || []
   const estMonTour = couleurCourante === monRole
-
-  // Écoute les mises à jour distantes
+// Écoute les mises à jour de l'état de partie
   useEffect(() => {
-    const canal = ecouterPartie(partieId, (nouvelEtat) => {
+    if (!code) return
+
+    // Charge l'état actuel immédiatement au cas où la partie a déjà démarré
+    async function chargerEtatActuel() {
+      const { data } = await supabase
+        .from('parties_en_ligne')
+        .select('*')
+        .eq('id', code)
+        .maybeSingle()
+      if (data?.etat === 'en_cours' && data?.etat_partie) {
+        setPartieEnCours(data.etat_partie)
+        setNbJoueurs(data.nb_joueurs)
+        setPhase('jeu')
+      }
+    }
+    chargerEtatActuel()
+
+    const canal = ecouterPartie(code, (nouvelEtat) => {
+      if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
+        setPartieEnCours(nouvelEtat.etat_partie)
+        setPhase('jeu')
+      }
       if (nouvelEtat.etat_partie) {
-        setPartie(nouvelEtat.etat_partie)
-        setCoupsDispo([])
+        setPartieEnCours(nouvelEtat.etat_partie)
       }
     })
     return () => supabase.removeChannel(canal)
-  }, [partieId])
+  }, [code])
 
   function sonPas() {
     try {
