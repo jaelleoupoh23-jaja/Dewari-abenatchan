@@ -1573,10 +1573,12 @@ async function chargerJoueurs() {
     }
   }
 
-  async function handleLancer() {
+ async function handleLancer() {
+    console.log('nbJoueurs au moment du lancer:', nbJoueurs)
     const couleursActives = nbJoueurs === 2
       ? ['rouge', 'jaune']
       : ['rouge', 'vert', 'jaune', 'bleu']
+    console.log('couleursActives:', couleursActives)
     const etatInitial = creerPartie(couleursActives)
     await demarrerPartieEnLigne(code, etatInitial)
   }
