@@ -1388,7 +1388,7 @@ function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }
         const { data, error } = await supabase
           .from('parties_en_ligne')
           .select('*')
-          .eq('id', code.trim())
+        .eq('id', partieId)
           .maybeSingle()
         if (error) { console.error('Erreur chargement:', error); return }
         if (data?.etat === 'en_cours' && data?.etat_partie) {
@@ -1402,7 +1402,7 @@ function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }
     }
     chargerEtatActuel()
 
-    const canal = ecouterPartie(code, (nouvelEtat) => {
+    const canal = ecouterPartie(partieId, (nouvelEtat) => {
       if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
         setPartieEnCours(nouvelEtat.etat_partie)
         setPhase('jeu')
@@ -1412,7 +1412,7 @@ function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }
       }
     })
     return () => supabase.removeChannel(canal)
-  }, [code])
+ }, [partieId])
 
   function sonPas() {
     try {
