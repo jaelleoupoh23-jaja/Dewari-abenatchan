@@ -1375,8 +1375,11 @@ function PageMultijoueur({ onRetour }) {
   const [occupe, setOccupe] = useState(false)
   const [pseudo] = useState(() => getPseudo())
   const [nbJoueurs, setNbJoueurs] = useState(2)
-  const [joueurs, setJoueurs] = useState([])
+ const [joueurs, setJoueurs] = useState([])
+  const [partieEnCours, setPartieEnCours] = useState(null)
+  const [monRole, setMonRole] = useState(null)
 
+  // Écoute les joueurs qui rejoignent
   useEffect(() => {
     if (!code) return
     chargerJoueurs()
@@ -1392,12 +1395,47 @@ function PageMultijoueur({ onRetour }) {
     return () => supabase.removeChannel(canal)
   }, [code])
 
+  // Écoute les mises à jour de l'état de partie
+  useEffect(() => {
+    if (!code) return
+    const canal = ecouterPartie(code, (nouvelEtat) => {
+      if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
+        setPartieEnCours(nouvelEtat.etat_partie)
+        setPhase('jeu')
+      }
+      if (nouvelEtat.etat_partie) {
+        setPartieEnCours(nouvelEtat.etat_partie)
+      }
+    })
+    return () => supabase.removeChannel(canal)
+  }, [code])
+
   async function chargerJoueurs() {
     const { data } = await supabase
       .from('joueurs_partie')
       .select('*')
       .eq('partie_id', code)
     setJoueurs(data || [])
+    const moi = (data || []).find(j => j.pseudo === pseudo)
+    if (moi) setMonRole(moi.couleur)
+  }
+
+  async function handleLancer() {
+    const couleursActives = nbJoueurs === 2
+      ? ['rouge', 'jaune']
+      : ['rouge', 'vert', 'jaune', 'bleu']
+    const etatInitial = creerPartie(couleursActives)
+    await demarrerPartieEnLigne(code, etatInitial)
+  }
+
+  async function handleCreer() {
+    setOccupe(true)
+    setErreur('')
+    const res = await creerSalon(nbJoueurs)
+    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
+    setCode(res.code)
+    setPhase('attente')
+    setOccupe(false)
   }
 
   async function handleCreer() {
@@ -1530,10 +1568,10 @@ function PageMultijoueur({ onRetour }) {
                 </div>
               ))}
             </div>
-            {joueurs.length < nbJoueurs ? (
+          {joueurs.length < nbJoueurs ? (
               <div style={{ fontSize: 28, animation: 'hintPulse 1.5s ease-in-out infinite' }}>⏳</div>
             ) : (
-              <button style={{ ...st.boutonPrincipal }}>
+              <button onClick={handleLancer} style={{ ...st.boutonPrincipal }}>
                 🚀 Tout le monde est là — Lancer la partie
               </button>
             )}
