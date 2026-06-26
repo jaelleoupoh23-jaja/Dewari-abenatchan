@@ -1542,7 +1542,7 @@ function PageMultijoueur({ onRetour }) {
   // Écoute les mises à jour de l'état de partie
   useEffect(() => {
    if (!code || code.length < 6) return
-    const canal = ecouterPartie(code, (nouvelEtat) => {
+   const canal = ecouterPartie(code || '', (nouvelEtat) => {
       if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
         setPartieEnCours(nouvelEtat.etat_partie)
         setPhase('jeu')
