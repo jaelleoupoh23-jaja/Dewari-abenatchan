@@ -2209,4 +2209,4 @@ function ChatSalon({ salon, membre, onRetour }) {
     </div>
   )
 }
-
+}
