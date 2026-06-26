@@ -630,8 +630,8 @@ function PageDe({ onRetour }) {
         }
       `}</style>
 
-      <div style={st.enteteChat}>
-        <button onClick={onRetour} style={st.retour}>←</button>
+     <div style={{ display:'flex', alignItems:'center', padding:'16px 16px 10px', borderBottom:'1px solid #2a2745' }}>
+        <button onClick={onRetour} style={{ background:'none', border:'none', fontSize:20, color:'#fff', cursor:'pointer' }}>←</button>
         <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🎲 Les Dés</span>
       </div>
 
