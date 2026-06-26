@@ -68,7 +68,9 @@ export async function rejoindreAvecCode(code) {
     .select('*')
     .eq('partie_id', partie.id)
 
-  const couleursDispos = ['rouge', 'vert', 'jaune', 'bleu']
+  const couleursDispos = partie.nb_joueurs === 2
+    ? ['rouge', 'jaune']
+    : ['rouge', 'vert', 'jaune', 'bleu']
   const couleursPrises = (joueurs || []).map(j => j.couleur)
   const couleur = couleursDispos.find(c => !couleursPrises.includes(c))
 
