@@ -1366,7 +1366,7 @@ function PetitDeLudo({ valeur, anime }) {
       ))}
     </div>
   )
-}function PageLudoEnLigne({ partieInitiale, partieId, monRole: monRoleInitial, pseudo, onRetour }) {
+function PageLudoEnLigne({ partieInitiale, partieId, monRole: monRoleInitial, pseudo, onRetour }) {
   const [partie, setPartie] = useState(partieInitiale)
   const [coupsDispo, setCoupsDispo] = useState([])
   const [deBouge, setDeBouge] = useState(false)
@@ -1385,33 +1385,33 @@ function PetitDeLudo({ valeur, anime }) {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
-      if (data?.couleur) {
-        setMonRole(data.couleur)
-        console.log('Rôle chargé dans PageLudoEnLigne:', data.couleur)
-      }
+      if (data?.couleur) setMonRole(data.couleur)
     }
     chargerMonRole()
   }, [partieId, pseudo])
 
-  const couleurCourante = partie?.couleurs[partie.tourActuel]
-  const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
-  const noms = partie?.couleurs || []
- const estMonTour = monRole ? couleurCourante === monRole : true
-// Écoute les mises à jour de l'état de partie
   useEffect(() => {
     if (!partieId) return
     const canal = ecouterPartie(partieId, (nouvelEtat) => {
       if (nouvelEtat.etat_partie) {
-        setPartie(nouvelEtat.etat_partie)
-        if (nouvelEtat.etat_partie?.coupsDispoActuels) {
-          setCoupsDispo(nouvelEtat.etat_partie.coupsDispoActuels)
+        const etat = nouvelEtat.etat_partie
+        setPartie(etat)
+        setCoupsDispo(etat.coupsDispoActuels || [])
+        if (etat.coupsDispoActuels?.length > 0) {
+          setMessageTour(`Dé : ${etat.dernierDe} — choisis un pion`)
         } else {
-          setCoupsDispo([])
+          setMessageTour('')
         }
       }
     })
     return () => supabase.removeChannel(canal)
   }, [partieId])
+
+  const couleurCourante = partie?.couleurs[partie.tourActuel]
+  const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
+  const noms = partie?.couleurs || []
+  const estMonTour = monRole ? couleurCourante === monRole : false
+
   function sonPas() {
     try {
       const audio = new Audio('/pas.mp3')
@@ -1423,55 +1423,53 @@ function PetitDeLudo({ valeur, anime }) {
   async function lancerAvecAnimation() {
     if (!estMonTour || coupsDispo.length > 0 || deBouge) return
     setDeBouge(true)
-    setTimeout(async () => {
+    try {
+      await new Promise(r => setTimeout(r, 650))
       await lancer()
+    } finally {
       setDeBouge(false)
-    }, 650)
+    }
   }
 
   async function lancer() {
-    if (!partie || coupsDispo.length > 0) return
+    if (!partie) return
     const resultat = lancerDe(partie)
     const nouvellePartie = resultat.partie
 
     if (resultat.tourAnnule) {
       const suite = passerAuJoueurSuivant(nouvellePartie)
-      await sauvegarderEtat(partieId, suite)
-      setPartie(suite)
+      const etat = { ...suite, coupsDispoActuels: [] }
+      await sauvegarderEtat(partieId, etat)
+      setPartie(etat)
       setCoupsDispo([])
       setMessageTour('3 six → tour annulé')
     } else if (resultat.aucunCoup) {
       const suite = passerAuJoueurSuivant(nouvellePartie)
-      await sauvegarderEtat(partieId, suite)
-      setPartie(suite)
+      const etat = { ...suite, coupsDispoActuels: [] }
+      await sauvegarderEtat(partieId, etat)
+      setPartie(etat)
       setCoupsDispo([])
       setMessageTour(`Dé : ${resultat.valeur} — aucun coup`)
- } else {
-      const partieAvecCoups = {
-        ...nouvellePartie,
-        coupsDispoActuels: resultat.coups
-      }
-      await sauvegarderEtat(partieId, partieAvecCoups)
-      setPartie(partieAvecCoups)
+    } else {
+      const etat = { ...nouvellePartie, coupsDispoActuels: resultat.coups }
+      await sauvegarderEtat(partieId, etat)
+      setPartie(etat)
       setCoupsDispo(resultat.coups)
       setMessageTour(`Dé : ${resultat.valeur} — choisis un pion`)
     }
   }
 
-async function jouerPion(index) {
+  async function jouerPion(index) {
     if (!partie || !partie.dernierDe || pionBouge || !estMonTour) return
     setPionBouge(true)
     const valeur = partie.dernierDe
-    const couleur = partie.couleurs[partie.tourActuel]
     let nouvellePartie = jouerCoup(partie, index, valeur)
-
     if (!nouvellePartie.doitRejouer) {
       nouvellePartie = passerAuJoueurSuivant(nouvellePartie)
     }
-
-    nouvellePartie = { ...nouvellePartie, coupsDispoActuels: [] }
-    await sauvegarderEtat(partieId, nouvellePartie)
-    setPartie(nouvellePartie)
+    const etat = { ...nouvellePartie, coupsDispoActuels: [] }
+    await sauvegarderEtat(partieId, etat)
+    setPartie(etat)
     setCoupsDispo([])
     setPionBouge(false)
     setMessageTour('')
@@ -1486,25 +1484,22 @@ async function jouerPion(index) {
           🌍 En ligne · {estMonTour ? '🟢 Ton tour' : `⏳ Tour de ${couleurCourante}`}
         </span>
       </div>
-
       {messageTour ? (
         <div style={{ textAlign: 'center', fontSize: 13, color: '#FFB800', padding: '6px 0' }}>
           {messageTour}
         </div>
       ) : null}
-
       <InterfaceLudoPro
         partie={partie}
         noms={noms}
         indexCourant={indexCourant}
         couleurCourante={couleurCourante}
-      coupsDispo={coupsDispo}
+        coupsDispo={estMonTour ? coupsDispo : []}
         deBouge={deBouge}
         lancerAvecAnimation={lancerAvecAnimation}
         jouerPion={jouerPion}
         onOuvrirChat={() => setChatJeuOuvert(true)}
       />
-
       <ChatJeu
         partieId={partieId}
         pseudo={pseudo}
@@ -1512,241 +1507,6 @@ async function jouerPion(index) {
         fermer={() => setChatJeuOuvert(false)}
         onNouveauMessage={() => {}}
       />
-    </div>
-  )
-}
-function PageMultijoueur({ onRetour }) {
-  const [phase, setPhase] = useState('menu')
-  const [code, setCode] = useState('')
-  const [codeJoint, setCodeJoint] = useState('')
-  const [erreur, setErreur] = useState('')
-  const [occupe, setOccupe] = useState(false)
-  const [pseudo] = useState(() => getPseudo())
-  const [nbJoueurs, setNbJoueurs] = useState(2)
- const [joueurs, setJoueurs] = useState([])
-  const [partieEnCours, setPartieEnCours] = useState(null)
-  const [monRole, setMonRole] = useState(null)
-
-  // Écoute les joueurs qui rejoignent
-  useEffect(() => {
-    if (!code || code.length < 6) return
-    chargerJoueurs()
-    const canal = supabase
-      .channel(`joueurs-${code}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'joueurs_partie',
-        filter: `partie_id=eq.${code}`,
-      }, () => chargerJoueurs())
-      .subscribe()
-    return () => supabase.removeChannel(canal)
-  }, [code])
-
-  // Écoute les mises à jour de l'état de partie
-  useEffect(() => {
-   if (!code || code.length < 6) return
- const canal = ecouterPartie(code, (nouvelEtat) => {
-      if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
-        setPartieEnCours(nouvelEtat.etat_partie)
-        setPhase('jeu')
-      }
-      if (nouvelEtat.etat_partie) {
-        setPartieEnCours(nouvelEtat.etat_partie)
-      }
-    })
-    return () => supabase.removeChannel(canal)
-  }, [code])
-
-async function chargerJoueurs() {
-    const { data } = await supabase
-      .from('joueurs_partie')
-      .select('*')
-      .eq('partie_id', code)
-    setJoueurs(data || [])
-    const moi = (data || []).find(j => j.pseudo === pseudo)
-    if (moi) {
-      setMonRole(moi.couleur)
-      console.log('Mon rôle:', moi.couleur, '| Mon pseudo:', pseudo)
-    } else {
-      console.log('Joueur non trouvé. Pseudo local:', pseudo, '| Joueurs:', data?.map(j => j.pseudo))
-    }
-  }
-
- async function handleLancer() {
-    console.log('nbJoueurs au moment du lancer:', nbJoueurs)
-    const couleursActives = nbJoueurs === 2
-      ? ['rouge', 'jaune']
-      : ['rouge', 'vert', 'jaune', 'bleu']
-    console.log('couleursActives:', couleursActives)
-    const etatInitial = creerPartie(couleursActives)
-    await demarrerPartieEnLigne(code, etatInitial)
-  }
-
-  async function handleCreer() {
-    setOccupe(true)
-    setErreur('')
-    const res = await creerSalon(nbJoueurs)
-    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
-    setCode(res.code)
-    setPhase('attente')
-    setOccupe(false)
-  }
-
-  async function handleCreer() {
-    setOccupe(true)
-    setErreur('')
-    const res = await creerSalon(nbJoueurs)
-    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
-    setCode(res.code)
-    setPhase('attente')
-    setOccupe(false)
-  }
-
-  async function handleRejoindre() {
-    if (!codeJoint.trim()) return
-    setOccupe(true)
-    setErreur('')
-    const res = await rejoindreAvecCode(codeJoint.trim())
-    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
-    setCode(res.code)
-    setPhase('attente')
-    setOccupe(false)
-  }
-
-  return (
-    <div style={st.page}>
-      <div style={st.enteteChat}>
-        <button onClick={onRetour} style={st.retour}>←</button>
-        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🌍 Jouer en ligne</span>
-      </div>
-
-      <div style={st.section}>
-        <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 16, textAlign: 'center' }}>
-          Ton pseudo : <strong style={{ color: '#FFB800' }}>{pseudo}</strong>
-        </div>
-
-       {phase === 'menu' && (
-          <>
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 8 }}>Nombre de joueurs :</div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {[2, 4].map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setNbJoueurs(n)}
-                    style={{
-                      ...st.ongletAuth,
-                      flex: 1,
-                      ...(nbJoueurs === n ? st.ongletActif : {})
-                    }}
-                  >
-                    {n} joueurs
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={handleCreer}
-              disabled={occupe}
-              style={{ ...st.boutonPrincipal, marginBottom: 14 }}
-            >
-              {occupe ? 'Création...' : '🎲 Créer un salon'}
-            </button>
-
-            <div style={{ textAlign: 'center', color: '#9a93b5', marginBottom: 12, fontSize: 13 }}>— ou —</div>
-
-            <input
-              value={codeJoint}
-              onChange={(e) => setCodeJoint(e.target.value.toUpperCase())}
-              placeholder="Code du salon (ex: AB12CD)"
-              style={{ ...st.input, marginBottom: 10, width: '100%', boxSizing: 'border-box' }}
-              maxLength={6}
-            />
-            <button
-              onClick={handleRejoindre}
-              disabled={occupe || !codeJoint.trim()}
-              style={{ ...st.boutonPrincipal }}
-            >
-              {occupe ? 'Connexion...' : '🚀 Rejoindre'}
-            </button>
-
-            {erreur && <div style={{ ...st.erreur, marginTop: 12 }}>{erreur}</div>}
-          </>
-        )}
-
-      {phase === 'attente' && (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 8 }}>Code de ton salon :</div>
-            <div style={{
-              fontSize: 36,
-              fontWeight: 900,
-              letterSpacing: 8,
-              color: '#FFB800',
-              background: '#1d1a35',
-              borderRadius: 16,
-              padding: '18px 24px',
-              marginBottom: 18,
-            }}>
-              {code}
-            </div>
-            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 16 }}>
-              Partage ce code à ton adversaire.
-            </div>
-            <div style={{
-              background: '#1d1a35',
-              borderRadius: 14,
-              padding: '12px 16px',
-              marginBottom: 16,
-              textAlign: 'left',
-            }}>
-              <div style={{ fontSize: 12, color: '#9a93b5', marginBottom: 8 }}>
-                Joueurs connectés ({joueurs.length}/{nbJoueurs}) :
-              </div>
-              {joueurs.map((j) => (
-                <div key={j.id} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  marginBottom: 6,
-                }}>
-                  <div style={{
-                    width: 12, height: 12,
-                    borderRadius: '50%',
-                    background: HEX_COULEUR[j.couleur] || '#fff',
-                    flexShrink: 0,
-                  }} />
-                  <span style={{ fontSize: 13, color: '#fff' }}>{j.pseudo}</span>
-                  {j.pseudo === pseudo && (
-                    <span style={{ fontSize: 11, color: '#FFB800' }}>(toi)</span>
-                  )}
-                </div>
-              ))}
-            </div>
-        {joueurs.length < nbJoueurs ? (
-              <div style={{ fontSize: 28, animation: 'hintPulse 1.5s ease-in-out infinite' }}>⏳</div>
-            ) : joueurs[0]?.pseudo === pseudo ? (
-              <button onClick={handleLancer} style={{ ...st.boutonPrincipal }}>
-                🚀 Tout le monde est là — Lancer la partie
-              </button>
-            ) : (
-              <div style={{ fontSize: 13, color: '#9a93b5', textAlign: 'center', marginTop: 8 }}>
-                ⏳ En attente que le créateur lance la partie...
-              </div>
-            )}
-          </div>
-        )}
-    </div>
-
-      {phase === 'jeu' && partieEnCours && (
-        <PageLudoEnLigne
-          partieInitiale={partieEnCours}
-          partieId={code}
-          monRole={monRole}
-          pseudo={pseudo}
-          onRetour={onRetour}
-        />
-      )}
     </div>
   )
 }
