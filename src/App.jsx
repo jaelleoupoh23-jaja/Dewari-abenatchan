@@ -3,6 +3,7 @@ import { supabase } from './supabaseClient'
 import ChatJeu from './ChatJeu'
 import AgoraRTC from 'agora-rtc-sdk-ng'
 import { creerPartie, coupsValides, jouerCoup, lancerDe, passerAuJoueurSuivant, estCaseSecurisee } from './MoteurLudo'
+import { getPseudo, creerSalon, rejoindreAvecCode, sauvegarderEtat, ecouterPartie } from './salleMultijoueur'
 
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
@@ -252,17 +253,18 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
           <div style={st.barreNom}>👑 Dewari-abenatchai</div>
           <NavOnglets onAller={allerA} />
           <div ref={refAccueil} />
-          <Accueil
-            salons={salons}
-            tournoi={tournoi}
-            inscritTournoi={inscritTournoi}
-            onChoisirSalon={ouvrirSalon}
-            onOuvrirTournoi={() => setModalAuth({ pourTournoi: true })}
-            onOuvrirDe={() => setEcran('de')}
-            onOuvrirLudo={() => setEcran('ludo')}
-            refTournoi={refTournoi}
-            refSalons={refSalons}
-          />
+        <Accueil
+  salons={salons}
+  tournoi={tournoi}
+  inscritTournoi={inscritTournoi}
+  onChoisirSalon={ouvrirSalon}
+  onOuvrirTournoi={() => setModalAuth({ pourTournoi: true })}
+  onOuvrirDe={() => setEcran('de')}
+  onOuvrirLudo={() => setEcran('ludo')}
+  onOuvrirMultijoueur={() => setEcran('multijoueur')}
+  refTournoi={refTournoi}
+  refSalons={refSalons}
+/>
           <div ref={refCompte}>
             <Compte
               session={session}
@@ -292,6 +294,9 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
       {ecran === 'ludo' && (
         <PageLudo onRetour={() => setEcran('accueil')} />
       )}
+      {ecran === 'multijoueur' && (
+  <PageMultijoueur onRetour={() => setEcran('accueil')} />
+)}
 
       {ecran === 'chat' && membre && salonActif && (
         <ChatSalon
@@ -361,7 +366,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   )
 }
 
-function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, refTournoi, refSalons }) {
+function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, refTournoi, refSalons }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -396,6 +401,18 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
         </div>
 
         <div onClick={onOuvrirLudo} style={st.carteLudo}>
+          <div onClick={onOuvrirMultijoueur} style={{
+  ...st.carteLudo,
+  background: 'linear-gradient(135deg,#FF4D6D,#FFB800)',
+  marginTop: 10
+}}>
+  <div style={st.carteDeEmoji}>🌍</div>
+  <div style={{ flex: 1, marginLeft: 12 }}>
+    <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer en ligne</div>
+    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Défie un ami à distance</div>
+  </div>
+  <div style={{ fontSize: 20 }}>→</div>
+</div>
           <div style={st.carteDeEmoji}>♟️</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
             <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dewari</div>
@@ -1347,6 +1364,103 @@ function PetitDeLudo({ valeur, anime }) {
           }}
         />
       ))}
+    </div>
+  )
+}
+function PageMultijoueur({ onRetour }) {
+  const [phase, setPhase] = useState('menu')
+  const [code, setCode] = useState('')
+  const [codeJoint, setCodeJoint] = useState('')
+  const [erreur, setErreur] = useState('')
+  const [occupe, setOccupe] = useState(false)
+  const [pseudo] = useState(() => getPseudo())
+
+  async function handleCreer() {
+    setOccupe(true)
+    setErreur('')
+    const res = await creerSalon(2, 'rouge')
+    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
+    setCode(res.code)
+    setPhase('attente')
+    setOccupe(false)
+  }
+
+  async function handleRejoindre() {
+    if (!codeJoint.trim()) return
+    setOccupe(true)
+    setErreur('')
+    const res = await rejoindreAvecCode(codeJoint.trim())
+    if (res.erreur) { setErreur(res.erreur); setOccupe(false); return }
+    setCode(res.code)
+    setPhase('attente')
+    setOccupe(false)
+  }
+
+  return (
+    <div style={st.page}>
+      <div style={st.enteteChat}>
+        <button onClick={onRetour} style={st.retour}>←</button>
+        <span style={{ fontWeight: 800, marginLeft: 8, color: '#fff', fontSize: 16 }}>🌍 Jouer en ligne</span>
+      </div>
+
+      <div style={st.section}>
+        <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 16, textAlign: 'center' }}>
+          Ton pseudo : <strong style={{ color: '#FFB800' }}>{pseudo}</strong>
+        </div>
+
+        {phase === 'menu' && (
+          <>
+            <button
+              onClick={handleCreer}
+              disabled={occupe}
+              style={{ ...st.boutonPrincipal, marginBottom: 14 }}
+            >
+              {occupe ? 'Création...' : '🎲 Créer un salon'}
+            </button>
+
+            <div style={{ textAlign: 'center', color: '#9a93b5', marginBottom: 12, fontSize: 13 }}>— ou —</div>
+
+            <input
+              value={codeJoint}
+              onChange={(e) => setCodeJoint(e.target.value.toUpperCase())}
+              placeholder="Code du salon (ex: AB12CD)"
+              style={{ ...st.input, marginBottom: 10, width: '100%', boxSizing: 'border-box' }}
+              maxLength={6}
+            />
+            <button
+              onClick={handleRejoindre}
+              disabled={occupe || !codeJoint.trim()}
+              style={{ ...st.boutonPrincipal }}
+            >
+              {occupe ? 'Connexion...' : '🚀 Rejoindre'}
+            </button>
+
+            {erreur && <div style={{ ...st.erreur, marginTop: 12 }}>{erreur}</div>}
+          </>
+        )}
+
+        {phase === 'attente' && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 8 }}>Code de ton salon :</div>
+            <div style={{
+              fontSize: 36,
+              fontWeight: 900,
+              letterSpacing: 8,
+              color: '#FFB800',
+              background: '#1d1a35',
+              borderRadius: 16,
+              padding: '18px 24px',
+              marginBottom: 18,
+            }}>
+              {code}
+            </div>
+            <div style={{ fontSize: 13, color: '#9a93b5', marginBottom: 24 }}>
+              Partage ce code à ton adversaire.<br />En attente qu'il rejoigne...
+            </div>
+            <div style={{ fontSize: 28, animation: 'hintPulse 1.5s ease-in-out infinite' }}>⏳</div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
