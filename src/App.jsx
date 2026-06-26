@@ -700,8 +700,9 @@ const totem = {
     bleu: 'TERRE ÉLÉPHANT',
   }
 
-  return (
-    <style>{`
+ return (
+  <>
+   <style>{`
   @keyframes dePlatSpin {
     0%   { transform: rotate(0deg) scale(1); }
     25%  { transform: rotate(-15deg) scale(1.15); }
@@ -709,8 +710,8 @@ const totem = {
     75%  { transform: rotate(-8deg) scale(1.05); }
     100% { transform: rotate(0deg) scale(1); }
   }
-  }</style>
-    <svg viewBox="0 0 330 330" style={st.ludoSvg}>
+`}</style>
+ <svg viewBox="0 0 330 330" style={st.ludoSvg}>
       <defs>
         <pattern id="motifJungle" width="42" height="42" patternUnits="userSpaceOnUse">
           <rect width="42" height="42" fill="#06381f" />
@@ -925,6 +926,7 @@ fontSize="13"
         })
       )}
     </svg>
+     </>
   )
 } 
 
