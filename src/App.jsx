@@ -1381,39 +1381,15 @@ function PageLudoEnLigne({ partieInitiale, partieId, monRole, pseudo, onRetour }
   const estMonTour = couleurCourante === monRole
 // Écoute les mises à jour de l'état de partie
   useEffect(() => {
-    if (!code) return
-
-  async function chargerEtatActuel() {
-      try {
-        const { data, error } = await supabase
-          .from('parties_en_ligne')
-          .select('*')
-        .eq('id', partieId)
-          .maybeSingle()
-        if (error) { console.error('Erreur chargement:', error); return }
-        if (data?.etat === 'en_cours' && data?.etat_partie) {
-          setPartieEnCours(data.etat_partie)
-          setNbJoueurs(data.nb_joueurs || 2)
-          setPhase('jeu')
-        }
-      } catch(e) {
-        console.error('Exception:', e)
-      }
-    }
-    chargerEtatActuel()
-
+    if (!partieId) return
     const canal = ecouterPartie(partieId, (nouvelEtat) => {
-      if (nouvelEtat.etat === 'en_cours' && nouvelEtat.etat_partie) {
-        setPartieEnCours(nouvelEtat.etat_partie)
-        setPhase('jeu')
-      }
       if (nouvelEtat.etat_partie) {
-        setPartieEnCours(nouvelEtat.etat_partie)
+        setPartie(nouvelEtat.etat_partie)
+        setCoupsDispo([])
       }
     })
     return () => supabase.removeChannel(canal)
- }, [partieId])
-
+  }, [partieId])
   function sonPas() {
     try {
       const audio = new Audio('/pas.mp3')
