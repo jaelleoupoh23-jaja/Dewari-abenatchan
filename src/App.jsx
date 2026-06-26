@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 import ChatJeu from './ChatJeu'
 import AgoraRTC from 'agora-rtc-sdk-ng'
 import { creerPartie, coupsValides, jouerCoup, lancerDe, passerAuJoueurSuivant, estCaseSecurisee } from './MoteurLudo'
-import { getPseudo, creerSalon, rejoindreAvecCode, sauvegarderEtat, ecouterPartie } from './salleMultijoueur'
+import { getPseudo, creerSalon, rejoindreAvecCode, sauvegarderEtat, ecouterPartie, demarrerPartieEnLigne } from './salleMultijoueur'
 
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
