@@ -666,6 +666,78 @@ function PageDe({ onRetour }) {
     </div>
   )
 }
+const PIPS_PLATEAU = {
+  1: [[50,50]],
+  2: [[30,30],[70,70]],
+  3: [[30,30],[50,50],[70,70]],
+  4: [[30,30],[70,30],[30,70],[70,70]],
+  5: [[30,30],[70,30],[50,50],[30,70],[70,70]],
+  6: [[30,22],[70,22],[30,50],[70,50],[30,78],[70,78]],
+}
+
+function DePlateau({ valeur, anime }) {
+  const pips = PIPS_PLATEAU[valeur] || PIPS_PLATEAU[1]
+  return (
+    <div style={{
+      width: '78%',
+      height: '78%',
+      margin: 'auto',
+      borderRadius: 10,
+      background: 'linear-gradient(145deg, #fdf6e3 0%, #f0e6c8 60%, #ddd0aa 100%)',
+      boxShadow: [
+        'inset 0 2px 4px rgba(255,255,255,0.9)',
+        'inset -2px -2px 5px rgba(0,0,0,0.15)',
+        '0 3px 8px rgba(0,0,0,0.45)',
+        '0 1px 0 #b8a880',
+      ].join(','),
+      position: 'relative',
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3,1fr)',
+      gridTemplateRows: 'repeat(3,1fr)',
+      padding: '10%',
+      boxSizing: 'border-box',
+      animation: anime ? 'dePlatBounce 0.65s cubic-bezier(0.36,0.07,0.19,0.97) both' : 'none',
+      transform: anime ? 'none' : 'rotate(-6deg)',
+      transition: 'transform 0.4s ease',
+    }}>
+      {[1,2,3,4,5,6,7,8,9].map((pos) => {
+        const actif = pips.some(([x,y]) => {
+          const col = Math.round(x/40)
+          const row = Math.round(y/40)
+          const posCalc = row === 0 ? (col === 0 ? 1 : col === 1 ? 2 : 3)
+                        : row === 1 ? (col === 0 ? 4 : col === 1 ? 5 : 6)
+                        : (col === 0 ? 7 : col === 1 ? 8 : 9)
+          return posCalc === pos
+        })
+        return (
+          <div key={pos} style={{
+            display:'flex', alignItems:'center', justifyContent:'center'
+          }}>
+            {actif && (
+              <div style={{
+                width: '55%',
+                height: '55%',
+                borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, #ff6b8a, #c8001a)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.5)',
+              }} />
+            )}
+          </div>
+        )
+      })}
+      <style>{`
+        @keyframes dePlatBounce {
+          0%   { transform: rotate(-6deg) scale(1); }
+          20%  { transform: rotate(15deg) scale(1.12); }
+          40%  { transform: rotate(-10deg) scale(1.08); }
+          60%  { transform: rotate(8deg) scale(1.05); }
+          80%  { transform: rotate(-4deg) scale(1.02); }
+          100% { transform: rotate(-6deg) scale(1); }
+        }
+      `}</style>
+    </div>
+  )
+}
 
 function PlateauLudo({ partie, coupsDispo, onJouerPion, dernierDe, couleurCourante, deBouge, onLancer }) {
 
@@ -836,10 +908,7 @@ const totem = {
   fontSize:34,
   lineHeight:'1'
 }}>
-<PetitDeLudo
-  valeur={dernierDe || 1}
-  anime={deBouge}
-/>
+<DePlateau valeur={dernierDe || 1} anime={deBouge} />
 </span>  </button> </foreignObject>
 
       {partie.couleurs.map((couleur) =>
