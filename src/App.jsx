@@ -839,23 +839,39 @@ const totem = {
         strokeWidth="2"
         filter="url(#lumiereOr)"
       />
-      <foreignObject   x={6.15 * CELLULE}   y={6.15 * CELLULE}   width={2.7 * CELLULE}   height={2.7 * CELLULE} >   <button     onClick={coupsDispo.length === 0 ? onLancer : undefined}     disabled={coupsDispo.length > 0 || deBouge}     style={{       width: '100%',       height: '100%',       borderRadius: 14,       border: `3px solid ${HEX_COULEUR[couleurCourante]}`,       background: '#fff',       fontSize: 30,       cursor: coupsDispo.length === 0 ? 'pointer' : 'default',       boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,       animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'     }}   >     <span style={{
-  display:'block',
-  color:'#111',
-  fontWeight:900,
-  fontSize:34,
-  lineHeight:'1'
-}}>
-        <span style={{
-  display: 'block',
-  color: '#111',
-  fontWeight: 900,
-  fontSize: 34,
-  lineHeight: '1',
-  animation: deBouge ? 'dePlatSpin 0.65s ease-in-out' : 'none',
-}}>
-  {deBouge ? faceDe(Math.ceil(Math.random() * 6)) : (dernierDe ? faceDe(dernierDe) : '🎲')}
-</span>  </button> </foreignObject>
+     <foreignObject
+  x={6.15 * CELLULE}
+  y={6.15 * CELLULE}
+  width={2.7 * CELLULE}
+  height={2.7 * CELLULE}
+>
+  <button
+    onClick={coupsDispo.length === 0 ? onLancer : undefined}
+    disabled={coupsDispo.length > 0 || deBouge}
+    style={{
+      width: '100%',
+      height: '100%',
+      borderRadius: 14,
+      border: `3px solid ${HEX_COULEUR[couleurCourante]}`,
+      background: '#fff',
+      fontSize: 30,
+      cursor: coupsDispo.length === 0 ? 'pointer' : 'default',
+      boxShadow: `0 0 18px ${HEX_COULEUR[couleurCourante]}`,
+      animation: deBouge ? 'dewariDeTourne .65s ease-in-out' : 'none'
+    }}
+  >
+    <span style={{
+      display: 'block',
+      color: '#111',
+      fontWeight: 900,
+      fontSize: 34,
+      lineHeight: '1',
+      animation: deBouge ? 'dePlatSpin 0.65s ease-in-out' : 'none'
+    }}>
+      {deBouge ? faceDe(Math.ceil(Math.random() * 6)) : (dernierDe ? faceDe(dernierDe) : '🎲')}
+    </span>
+  </button>
+</foreignObject>
 
       {partie.couleurs.map((couleur) =>
         partie.pions[couleur].map((pion, index) => {
