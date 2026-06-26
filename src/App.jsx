@@ -1402,13 +1402,12 @@ function PetitDeLudo({ valeur, anime }) {
     if (!partieId) return
     const canal = ecouterPartie(partieId, (nouvelEtat) => {
       if (nouvelEtat.etat_partie) {
-        setPartie(prev => {
-          if (JSON.stringify(prev) !== JSON.stringify(nouvelEtat.etat_partie)) {
-            setCoupsDispo([])
-            return nouvelEtat.etat_partie
-          }
-          return prev
-        })
+        setPartie(nouvelEtat.etat_partie)
+        if (nouvelEtat.etat_partie?.coupsDispoActuels) {
+          setCoupsDispo(nouvelEtat.etat_partie.coupsDispoActuels)
+        } else {
+          setCoupsDispo([])
+        }
       }
     })
     return () => supabase.removeChannel(canal)
@@ -1447,9 +1446,13 @@ function PetitDeLudo({ valeur, anime }) {
       setPartie(suite)
       setCoupsDispo([])
       setMessageTour(`Dé : ${resultat.valeur} — aucun coup`)
-    } else {
-      await sauvegarderEtat(partieId, nouvellePartie)
-      setPartie(nouvellePartie)
+ } else {
+      const partieAvecCoups = {
+        ...nouvellePartie,
+        coupsDispoActuels: resultat.coups
+      }
+      await sauvegarderEtat(partieId, partieAvecCoups)
+      setPartie(partieAvecCoups)
       setCoupsDispo(resultat.coups)
       setMessageTour(`Dé : ${resultat.valeur} — choisis un pion`)
     }
