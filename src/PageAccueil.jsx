@@ -6,7 +6,8 @@ export default function PageAccueil({ onCommencer }) {
 
         <div style={styles.badge}>🇨🇮 L'expérience ivoirienne en ligne</div>
 
-        <h1 style={styles.titre}>Dewari-abenatchai</h1>
+        <h1 style={styles.titre}>DEWARI
+abenatchai</h1>
 
       <div>⚔️ Choisis ton quartier</div>
 <div>👀 Observe les parties en direct</div>
