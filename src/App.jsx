@@ -459,7 +459,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
             )
           })}
         </div>
-  
+         </div> 
     </>
   )
 }
