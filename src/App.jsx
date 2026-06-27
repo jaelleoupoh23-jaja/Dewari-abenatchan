@@ -433,8 +433,8 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
   </div>
   <div style={{ fontSize: 20 }}>→</div>
        </div>
-       
-
+      
+ </div>
       <div ref={refSalons} style={st.section}>
         <div style={st.sectionTitre}>Choisis ton salon</div>
         <div style={st.sectionSousTitre}>20 joueurs max par salon</div>
@@ -459,7 +459,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
             )
           })}
         </div>
-      </div>
+  
     </>
   )
 }
