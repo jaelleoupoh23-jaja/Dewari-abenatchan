@@ -12,11 +12,6 @@ export default function PageAccueil({ onCommencer }) {
 <div>👀 Observe les parties en direct</div>
 <div>💬 Discute anonymement avec la communauté</div>
 
-        <div style={styles.stats}>
-          <div>🎲 Dé en ligne</div>
-          <div>♟️ Dewari</div>
-          <div>👁️ Spectateur</div>
-        </div>
 
         <button onClick={onCommencer} style={styles.bouton}>
           ⚔️ Choisis ton quartier
