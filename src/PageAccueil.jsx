@@ -11,6 +11,7 @@ export default function PageAccueil({ onCommencer }) {
       <div>⚔️ Choisis ton quartier</div>
 <div>👀 Observe les parties en direct</div>
 <div>💬 Discute anonymement avec la communauté</div>
+        🔥 Plus qu'un jeu... une expérience ivoirienne.
 
 
         <button onClick={onCommencer} style={styles.bouton}>
