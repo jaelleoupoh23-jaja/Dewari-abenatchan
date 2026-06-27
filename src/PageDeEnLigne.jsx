@@ -26,12 +26,11 @@ export default function PageDeEnLigne({ onRetour }) {
   useEffect(() => {
     if (!code) return
     const canal = supabase.channel('de-' + code)
-      .on('postgres_changes', {
+   .on('postgres_changes', {
         event: '*', schema: 'public',
-        table: 'parties_de_en_ligne',
-        filter: `code=eq.${code}`
+        table: 'parties_de_en_ligne'
       }, (payload) => {
-        if (payload.new) setPartie(payload.new)
+        if (payload.new && payload.new.code === code) setPartie(payload.new)
       })
       .subscribe()
     return () => supabase.removeChannel(canal)
