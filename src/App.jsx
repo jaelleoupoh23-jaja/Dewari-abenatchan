@@ -1366,7 +1366,7 @@ function PetitDeLudo({ valeur, anime }) {
       ))}
     </div>
   )
-}function PageLudoEnLigne({ partieInitiale, partieId, monRole: monRoleInitial, pseudo, onRetour }) {
+}function ({ partieInitiale, partieId, monRole: monRoleInitial, pseudo, onRetour }) {
   const [partie, setPartie] = useState(partieInitiale)
   const [coupsDispo, setCoupsDispo] = useState([])
   const [deBouge, setDeBouge] = useState(false)
@@ -1387,7 +1387,7 @@ function PetitDeLudo({ valeur, anime }) {
         .maybeSingle()
       if (data?.couleur) {
         setMonRole(data.couleur)
-        console.log('Rôle chargé dans PageLudoEnLigne:', data.couleur)
+        console.log('Rôle chargé dans :', data.couleur)
       }
     }
     chargerMonRole()
@@ -1396,7 +1396,7 @@ function PetitDeLudo({ valeur, anime }) {
   const couleurCourante = partie?.couleurs[partie.tourActuel]
   const indexCourant = partie ? partie.couleurs.indexOf(couleurCourante) : -1
   const noms = partie?.couleurs || []
- const estMonTour = monRole ? couleurCourante === monRole : true
+const estMonTour = monRole ? couleurCourante === monRole : false
 // Écoute les mises à jour de l'état de partie
   useEffect(() => {
     if (!partieId) return
