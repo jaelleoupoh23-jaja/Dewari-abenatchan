@@ -11,7 +11,7 @@ abenatchai</h1>
 
       <div>⚔️ Choisis ton quartier</div>
 <div>👀 Observe les parties en direct</div>
-<div>💬 Discute anonymement avec la communauté</div>
+<div>💬Chat anonyme</div>
         🔥 Plus qu'un jeu... une expérience ivoirienne.
 
 
