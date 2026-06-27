@@ -432,11 +432,8 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
     <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Suis un match en direct</div>
   </div>
   <div style={{ fontSize: 20 }}>→</div>
-</div>
-          </div>
-          <div style={{ fontSize: 20 }}>→</div>
-        </div>
-      </div>
+       </div>
+       
 
       <div ref={refSalons} style={st.section}>
         <div style={st.sectionTitre}>Choisis ton salon</div>
