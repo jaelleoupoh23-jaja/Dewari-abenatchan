@@ -35,6 +35,18 @@ export default function PageAccueil({ onCommencer }) {
 }
 
 const styles = {
+  const animation = document.createElement('style')
+animation.innerHTML = `
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pulseButton {
+  0%, 100% { box-shadow: 0 14px 30px rgba(255,77,109,0.35); }
+  50% { box-shadow: 0 18px 45px rgba(255,184,0,0.55); }
+}
+`
+document.head.appendChild(animation)
   page: {
     minHeight: '100vh',
     background: 'radial-gradient(circle at top, #3b0a66, #10051f 55%, #05020c)',
@@ -56,7 +68,8 @@ const styles = {
   },
   logo: {
     fontSize: 64,
-    marginBottom: 16
+    marginBottom: 16,
+      animation: 'floatLogo 2.8s ease-in-out infinite'
   },
   badge: {
     display: 'inline-block',
@@ -100,6 +113,7 @@ const styles = {
     background: 'linear-gradient(135deg,#FF4D6D,#FFB800)',
     boxShadow: '0 14px 30px rgba(255,77,109,0.35)',
     cursor: 'pointer'
+    animation: 'pulseButton 2s ease-in-out infinite'
   },
   note: {
     fontSize: 12,
