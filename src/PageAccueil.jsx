@@ -4,7 +4,7 @@ export default function PageAccueil({ onCommencer }) {
       <div style={styles.card}>
         <div style={styles.logo}>⚔️🎲🚀</div>
 
-        <div style={styles.badge}>🇨🇮 L'expérience ivoirienne en ligne</div>
+        <div style={styles.badge}> L'expérience ivoirienne en ligne</div>
 
         <h1 style={styles.titre}>DEWARI
 abenatchai</h1>
