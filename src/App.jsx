@@ -1401,8 +1401,8 @@ function PetitDeLudo({ valeur, anime }) {
   useEffect(() => {
     if (!partieId) return
     const canal = ecouterPartie(partieId, (nouvelEtat) => {
-      if (nouvelEtat.etat_partie) {
-        setPartie(nouvelEtat.etat_partie)
+      if (nouvelEtat.etat_partie && !pionBouge) {
+  setPartie(nouvelEtat.etat_partie)
         if (nouvelEtat.etat_partie?.coupsDispoActuels) {
           setCoupsDispo(nouvelEtat.etat_partie.coupsDispoActuels)
         } else {
