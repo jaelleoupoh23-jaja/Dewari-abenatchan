@@ -5,6 +5,7 @@ import AgoraRTC from 'agora-rtc-sdk-ng'
 import { creerPartie, coupsValides, jouerCoup, lancerDe, passerAuJoueurSuivant, estCaseSecurisee } from './MoteurLudo'
 import { getPseudo, creerSalon, rejoindreAvecCode, sauvegarderEtat, ecouterPartie, demarrerPartieEnLigne } from './salleMultijoueur'
 import { genererCodeSpectateur, ecouterPartieSpectateur, envoyerMessageSpectateur, envoyerCadeauSpectateur, ecouterChatSpectateur } from './spectateur'
+import PageDeEnLigne from './PageDeEnLigne'
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
   { emoji: '🏆', titre: 'Décembre. La compétition arrive.', fond: 'linear-gradient(135deg,#FFB800,#FF4D6D)' },
@@ -263,6 +264,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   onOuvrirLudo={() => setEcran('ludo')}
   onOuvrirMultijoueur={() => setEcran('multijoueur')}
   onOuvrirSpectateur={() => setEcran('spectateur')}
+  onOuvrirDeEnLigne={() => setEcran('de_en_ligne')}
   refTournoi={refTournoi}
   refSalons={refSalons}
 />
@@ -299,6 +301,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   <PageMultijoueur onRetour={() => setEcran('accueil')} />
 )}
 {ecran === 'spectateur' && <PageSpectateur onRetour={() => setEcran('accueil')} />}
+      {ecran === 'de_en_ligne' && <PageDeEnLigne onRetour={() => setEcran('accueil')} />}
       {ecran === 'chat' && membre && salonActif && (
         <ChatSalon
           salon={salonActif}
@@ -367,7 +370,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   )
 }
 
-function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, onOuvrirSpectateur, refTournoi, refSalons }) {
+function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, onOuvrirSpectateur, onOuvrirDeEnLigne, refTournoi, refSalons }) {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -430,6 +433,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
   <div style={{ flex: 1, marginLeft: 12 }}>
     <div style={{ fontWeight: 800, fontSize: 16 }}>Regarder une partie</div>
     <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Suis un match en direct</div>
+    <div onClick={() => onOuvrirDeEnLigne && onOuvrirDeEnLigne()} style={{ ...st.carteLudo, background: 'linear-gradient(135deg,#1B4332,#40916C)', marginTop: 10 }}><div style={st.carteDeEmoji}>🎲</div><div style={{ flex: 1, marginLeft: 12 }}><div style={{ fontWeight: 800, fontSize: 16 }}>Dé en ligne</div><div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Défie un ami avec un code</div></div><div style={{ fontSize: 20 }}>→</div></div>
   </div>
   <div style={{ fontSize: 20 }}>→</div>
        </div>
