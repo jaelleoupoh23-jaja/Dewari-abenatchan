@@ -435,11 +435,11 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
           <div style={{ flex: 1, marginLeft: 12 }}>
             <div style={{ fontWeight: 800, fontSize: 16 }}>Regarder une partie</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Suis un match en direct</div>
-          </div>
-          
-        </div>
-      
-      <div ref={refSalons} style={st.section}>
+       </div>
+</div>
+</div>
+
+<div ref={refSalons} style={st.section}>
         <div style={st.sectionTitre}>Choisis ton salon</div>
         <div style={st.sectionSousTitre}>20 joueurs max par salon</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
@@ -463,7 +463,7 @@ function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTour
             )
           })}
         </div>
-         </div> 
+         </div>
     </>
   )
 }
