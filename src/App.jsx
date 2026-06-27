@@ -7,6 +7,7 @@ import { getPseudo, creerSalon, rejoindreAvecCode, sauvegarderEtat, ecouterParti
 import { genererCodeSpectateur, ecouterPartieSpectateur, envoyerMessageSpectateur, envoyerCadeauSpectateur, ecouterChatSpectateur } from './spectateur'
 import PageDeEnLigne from './PageDeEnLigne'
 import PageJuridique from "./PageJuridique";
+import PageAccueil from './PageAccueil'
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
   { emoji: '🏆', titre: 'Décembre. La compétition arrive.', fond: 'linear-gradient(135deg,#FFB800,#FF4D6D)' },
@@ -152,7 +153,7 @@ function coordPion(couleur, pion, index) {
   return BASE_COORDS[couleur]?.[index] || [7, 7]
 }
 export default function App() {
-  const [ecran, setEcran] = useState('accueil')
+ const [ecran, setEcran] = useState('landing')
   const [session, setSession] = useState(null)
   const [membre, setMembre] = useState(null)
   const [salonActif, setSalonActif] = useState(null)
@@ -250,6 +251,9 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
 
   return (
     <div style={st.page}>
+      {ecran === 'landing' && (
+  <PageAccueil onCommencer={() => setEcran('accueil')} />
+)}
       {ecran === "juridique" && (
     <PageJuridique
         onRetour={() => setEcran("accueil")}
