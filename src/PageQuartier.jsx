@@ -11,12 +11,35 @@ export default function PageQuartier({ quartier, onRetour }) {
       </section>
 
       <div style={styles.grid}>
-        <div style={styles.carte}>
-          <h2>💬 Chat du quartier</h2>
-          <p>Discute anonymement avec les joueurs de ce quartier.</p>
-        </div>
+      <div style={styles.carte}>
+  <h2>💬 Chat du quartier</h2>
 
-        <div style={styles.carte}>
+  <div style={styles.messages}>
+    <div style={styles.message}>
+      <strong>👤 Fantôme_82</strong>
+      <div>Quelqu'un pour une partie ? 🎲</div>
+    </div>
+
+    <div style={styles.message}>
+      <strong>👤 King225</strong>
+      <div>Moi 🔥</div>
+    </div>
+
+    <div style={styles.message}>
+      <strong>👤 Shadow</strong>
+      <div>J'arrive dans 2 min.</div>
+    </div>
+  </div>
+
+  <input
+    placeholder="Écrire un message..."
+    style={styles.input}
+  />
+
+  <button style={styles.bouton}>
+    Envoyer
+  </button>
+</div>
           <h2>🎲 Parties en cours</h2>
           <p>Observe ou rejoins les matchs disponibles.</p>
         </div>
@@ -90,5 +113,40 @@ const styles = {
     padding: 16,
     background: 'rgba(28,24,58,0.92)',
     border: '1px solid rgba(255,255,255,0.12)'
-  }
+  };
+  messages: {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 10,
+  marginTop: 12,
+  marginBottom: 12
+},
+
+message: {
+  background: '#1d2757',
+  borderRadius: 12,
+  padding: 10,
+  color: '#fff',
+  fontSize: 13
+},
+
+input: {
+  width: '100%',
+  padding: 10,
+  borderRadius: 10,
+  border: 'none',
+  marginBottom: 10,
+  outline: 'none'
+},
+
+bouton: {
+  width: '100%',
+  padding: 12,
+  borderRadius: 10,
+  border: 'none',
+  background: '#ffb300',
+  color: '#111',
+  fontWeight: 'bold',
+  cursor: 'pointer'
+}
 }
