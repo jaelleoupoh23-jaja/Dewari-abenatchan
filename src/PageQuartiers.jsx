@@ -30,7 +30,7 @@ export default function PageQuartiers({ salons = [], onChoisirSalon, onRetour })
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+}, [salons]);
 
   async function chargerConnectesQuartiers() {
     const resultats = {};
@@ -39,8 +39,8 @@ export default function PageQuartiers({ salons = [], onChoisirSalon, onRetour })
       const { count } = await supabase
         .from("membres")
         .select("*", { count: "exact", head: true })
-        .eq("quartier", q.nom)
-        .eq("is_online", true);
+       .eq("salon_id", salons[quartiers.indexOf(q)]?.id)
+.eq("is_online", true);
 
       resultats[q.nom] = count || 0;
     }
