@@ -8,6 +8,7 @@ import { genererCodeSpectateur, ecouterPartieSpectateur, envoyerMessageSpectateu
 import PageDeEnLigne from './PageDeEnLigne'
 import PageJuridique from "./PageJuridique";
 import PageAccueil from './PageAccueil'
+import PageQuartiers from './PageQuartiers'
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
   { emoji: '🏆', titre: 'Décembre. La compétition arrive.', fond: 'linear-gradient(135deg,#FFB800,#FF4D6D)' },
@@ -233,15 +234,24 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
     chargerSalons()
   }
 
-  function allerA(id) {
-    if (id === 'tournoi') {
-      setEcran('tournoi')
-      return
-    }
-    if (ecran !== 'accueil') setEcran('accueil')
-    const refs = { accueil: refAccueil, salons: refSalons, compte: refCompte }
-    setTimeout(() => refs[id]?.current?.scrollIntoView({ behavior: 'smooth' }), 50)
+ function allerA(id) {
+  if (id === 'tournoi') {
+    setEcran('tournoi')
+    return
   }
+
+  if (id === 'salons') {
+    setEcran('quartiers')
+    return
+  }
+
+  if (id === 'compte') {
+    setEcran('compte')
+    return
+  }
+
+  setEcran('accueil')
+}
 
   async function deconnexion() {
     await supabase.auth.signOut()
@@ -299,6 +309,13 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
           onRetour={() => setEcran('accueil')}
         />
       )}
+      {ecran === 'quartiers' && (
+  <PageQuartiers
+    salons={salons}
+    onChoisirSalon={ouvrirSalon}
+    onRetour={() => setEcran('accueil')}
+  />
+)}
 
       {ecran === 'de' && (
         <PageDe onRetour={() => setEcran('accueil')} />
