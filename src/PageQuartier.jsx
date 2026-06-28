@@ -42,10 +42,10 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
 
   async function chargerMessages() {
     const { data } = await supabase
-      .from("messages_quartier")
+     .from("messages_partie")
       .select("*")
-      .eq("quartier", quartier?.nom)
       .order("created_at", { ascending: true });
+    .limit(3)
 
     setMessages(data || []);
   }
