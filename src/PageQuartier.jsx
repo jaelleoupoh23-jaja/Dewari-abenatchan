@@ -1,4 +1,4 @@
-export default function PageQuartier({ quartier, onRetour }) {
+export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   return (
     <div style={styles.page}>
       <button onClick={onRetour} style={styles.retour}>← Retour aux quartiers</button>
@@ -11,7 +11,10 @@ export default function PageQuartier({ quartier, onRetour }) {
       </section>
 
       <div style={styles.grid}>
-      <div style={styles.carte}>
+     <div
+  style={{ ...styles.carte, cursor: 'pointer' }}
+  onClick={() => onOuvrirChat(quartier)}
+>
   <h2>💬 Chat du quartier</h2>
 
   <div style={styles.messages}>
