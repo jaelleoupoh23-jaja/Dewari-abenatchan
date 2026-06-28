@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 const quartiers = [
   { nom: 'Yopougon', icone: '⚔️', surnom: 'Les Ultras', entree: '2 500 FCFA', couleur: '#FF8A00' },
   { nom: 'Abobo', icone: '💉', surnom: 'Les Guerriers', entree: '2 500 FCFA', couleur: '#FF4D6D' },
@@ -10,6 +12,40 @@ const quartiers = [
 ]
 
 export default function PageQuartiers({ salons = [], onChoisirSalon, onRetour }) {
+  const [connectesParQuartier, setConnectesParQuartier] = useState({});
+
+useEffect(() => {
+  chargerConnectesQuartiers();
+
+  const channel = supabase
+    .channel("quartiers-online")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "membres" },
+      () => chargerConnectesQuartiers()
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+
+async function chargerConnectesQuartiers() {
+  const resultats = {};
+
+  for (const q of quartiers) {
+    const { count } = await supabase
+      .from("membres")
+      .select("*", { count: "exact", head: true })
+      .eq("quartier", q.nom)
+      .eq("is_online", true);
+
+    resultats[q.nom] = count || 0;
+  }
+
+  setConnectesParQuartier(resultats);
+}
   return (
     <div style={styles.page}>
       <button onClick={onRetour} style={styles.retour}>← Retour</button>
@@ -35,8 +71,9 @@ export default function PageQuartiers({ salons = [], onChoisirSalon, onRetour })
                 <div style={styles.nom}>{q.nom}</div>
                 <div style={styles.surnom}>{q.icone} {q.surnom}</div>
                 <div style={styles.detail}>💰 Entrée : à partir de {q.entree}</div>
-                <div style={styles.connectes}>👥 {salon.nbMembres || 0} connectés</div>
-              </div>
+               <div style={styles.connectes}>
+  👥 {connectesParQuartier[q.nom] || 0} connectés
+</div>
 
               <div style={{ ...styles.fleche, color: q.couleur }}>→</div>
             </div>
