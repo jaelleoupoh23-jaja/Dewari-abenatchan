@@ -9,6 +9,7 @@ import PageDeEnLigne from './PageDeEnLigne'
 import PageJuridique from "./PageJuridique";
 import PageAccueil from './PageAccueil'
 import PageQuartiers from './PageQuartiers'
+import PageQuartier from './PageQuartier'
 const SLIDES = [
   { emoji: '🎲', titre: 'Le Ludo prend une autre dimension', fond: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)' },
   { emoji: '🏆', titre: 'Décembre. La compétition arrive.', fond: 'linear-gradient(135deg,#FFB800,#FF4D6D)' },
@@ -158,6 +159,7 @@ export default function App() {
   const [session, setSession] = useState(null)
   const [membre, setMembre] = useState(null)
   const [salonActif, setSalonActif] = useState(null)
+  const [quartierActif, setQuartierActif] = useState(null)
   const [salons, setSalons] = useState([])
   const [tournoi, setTournoi] = useState(null)
   const [modalAuth, setModalAuth] = useState(null)
@@ -309,10 +311,19 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
           onRetour={() => setEcran('accueil')}
         />
       )}
+      {ecran === 'quartier' && (
+  <PageQuartier
+    quartier={quartierActif}
+    onRetour={() => setEcran('quartiers')}
+  />
+)}
       {ecran === 'quartiers' && (
   <PageQuartiers
     salons={salons}
-    onChoisirSalon={ouvrirSalon}
+   onChoisirSalon={(quartier) => {
+  setQuartierActif(quartier)
+  setEcran('quartier')
+}}
     onRetour={() => setEcran('accueil')}
   />
 )}
