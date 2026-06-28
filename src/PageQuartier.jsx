@@ -6,13 +6,13 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    if (!quartier?.nom) return;
+    if (!quartier?.id) return;
 
     chargerConnectes();
     chargerMessages();
 
     const channel = supabase
-      .channel("quartier-" + quartier.nom)
+      .channel("quartier-live-" + quartier.id)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "membres" },
@@ -28,7 +28,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [quartier?.nom]);
+  }, [quartier?.id]);
 
   async function chargerConnectes() {
     const { count } = await supabase
@@ -40,16 +40,16 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
     setConnectes(count || 0);
   }
 
-async function chargerMessages() {
-  const { data } = await supabase
-    .from("messages")
-    .select("*")
-    .eq("salon_id", quartier?.id)
-    .order("created_at", { ascending: false })
-    .limit(3);
+  async function chargerMessages() {
+    const { data } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("salon_id", quartier?.id)
+      .order("created_at", { ascending: false })
+      .limit(3);
 
-  setMessages((data || []).reverse());
-}
+    setMessages((data || []).reverse());
+  }
   return (
     <div style={styles.page}>
       <button onClick={onRetour} style={styles.retour}>← Retour aux quartiers</button>
