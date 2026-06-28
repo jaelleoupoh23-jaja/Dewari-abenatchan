@@ -5,30 +5,36 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   const [connectes, setConnectes] = useState(0);
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    if (!quartier?.id) return;
+useEffect(() => {
+  if (!quartier?.id) return;
 
-    chargerConnectes();
-    chargerMessages();
-
-    const channel = supabase
-      .channel("quartier-live-" + quartier.id)
-   .on(
-  "postgres_changes",
-  { event: "*", schema: "public", table: "messages" },
-  () => chargerMessages()
-)
-.on(
-  "postgres_changes",
-  { event: "*", schema: "public", table: "membres" },
-  () => chargerConnectes()
-)
-.subscribe();
-    const refresh = setInterval(() => {
   chargerConnectes();
   chargerMessages();
-}, 3000);
 
+  const channel = supabase
+    .channel("quartier-live-" + quartier.id)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "messages" },
+      () => chargerMessages()
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "membres" },
+      () => chargerConnectes()
+    )
+    .subscribe();
+
+  const refresh = setInterval(() => {
+    chargerConnectes();
+    chargerMessages();
+  }, 3000);
+
+  return () => {
+    clearInterval(refresh);
+    supabase.removeChannel(channel);
+  };
+}, [quartier?.id]);
   return () => {
   clearInterval(refresh);
   supabase.removeChannel(channel);
