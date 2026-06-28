@@ -469,7 +469,6 @@ const quartiers = [
 </div>
 </div>
 
-</div>
   </>    
   )
 }
