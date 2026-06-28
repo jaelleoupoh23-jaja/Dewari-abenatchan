@@ -44,10 +44,10 @@ async function chargerMessages() {
   const { data } = await supabase
     .from("messages_partie")
     .select("*")
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(3);
 
-  setMessages(data || []);
+  setMessages((data || []).reverse());
 }
   return (
     <div style={styles.page}>
