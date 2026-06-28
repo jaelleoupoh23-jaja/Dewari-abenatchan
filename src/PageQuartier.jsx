@@ -20,7 +20,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "messages_partie" },
+        { event: "*", schema: "public", table: "messages" },
         () => chargerMessages()
       )
       .subscribe();
@@ -42,8 +42,9 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
 
 async function chargerMessages() {
   const { data } = await supabase
-    .from("messages_partie")
+    .from("messages")
     .select("*")
+    .eq("salon_id", quartier?.id)
     .order("created_at", { ascending: false })
     .limit(3);
 
