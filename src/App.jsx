@@ -312,10 +312,11 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
         />
       )}
       {ecran === 'quartier' && (
-  <PageQuartier
-    quartier={quartierActif}
-    onRetour={() => setEcran('quartiers')}
-  />
+ <PageQuartier
+  quartier={quartierActif}
+  onOuvrirChat={() => ouvrirSalon(quartierActif)}
+  onRetour={() => setEcran('quartiers')}
+/>
 )}
       {ecran === 'quartiers' && (
   <PageQuartiers
