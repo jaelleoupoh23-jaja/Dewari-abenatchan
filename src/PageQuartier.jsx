@@ -1,4 +1,40 @@
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
+  const [connectes, setConnectes] = useState(0);
+
+useEffect(() => {
+  chargerConnectes();
+
+  const channel = supabase
+    .channel("membres-online")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "membres",
+      },
+      () => {
+        chargerConnectes();
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [quartier]);
+
+async function chargerConnectes() {
+  const { count } = await supabase
+    .from("membres")
+    .select("*", { count: "exact", head: true })
+    .eq("quartier", quartier?.nom)
+    .eq("is_online", true);
+
+  setConnectes(count || 0);
+}
   return (
     <div style={styles.page}>
       <button onClick={onRetour} style={styles.retour}>← Retour aux quartiers</button>
@@ -7,7 +43,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
         <div style={styles.icone}>{quartier?.icone || '⚔️'}</div>
         <h1 style={styles.titre}>{quartier?.nom || 'Quartier'}</h1>
         <div style={styles.surnom}>{quartier?.surnom || 'Communauté'}</div>
-        <div style={styles.connectes}>👥 {quartier?.nbMembres || 0} connectés</div>
+        <div style={styles.connectes}>👥 {connectes} connectés</div>
       </section>
 
       <div style={styles.grid}>
