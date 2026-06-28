@@ -24,11 +24,15 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   () => chargerConnectes()
 )
 .subscribe();
+    const refresh = setInterval(() => {
+  chargerConnectes();
+  chargerMessages();
+}, 3000);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [quartier?.id]);
+  return () => {
+  clearInterval(refresh);
+  supabase.removeChannel(channel);
+};
 
   async function chargerConnectes() {
     const { count } = await supabase
