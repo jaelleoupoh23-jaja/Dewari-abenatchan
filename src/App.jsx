@@ -469,50 +469,6 @@ const quartiers = [
 </div>
 </div>
 
-<div ref={refSalons} style={st.section}>
-  <div style={st.sectionTitre}>⚔️ Choisis ton quartier</div>
-  <div style={st.sectionSousTitre}>
-    Rejoins ta communauté, défends ton quartier et entre dans l’ambiance.
-  </div>
-
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 14 }}>
-    {salons.map((s, i) => {
-      const q = quartiers[i] || quartiers[0]
-
-      return (
-        <div
-          key={s.id}
-          onClick={() => onChoisirSalon({ ...s, nom: q.nom })}
-          style={{
-            ...st.ligneSalon,
-            alignItems: 'flex-start',
-            border: `1px solid ${q.couleur}`,
-            boxShadow: `0 10px 28px ${q.couleur}22`,
-            cursor: 'pointer'
-          }}
-        >
-          <div style={{ ...st.avatar, backgroundColor: q.couleur }}>
-            {q.icone}
-          </div>
-
-          <div style={{ flex: 1, marginLeft: 12, minWidth: 0 }}>
-            <div style={{ fontWeight: 950, fontSize: 17 }}>{q.nom}</div>
-            <div style={{ fontSize: 14, color: '#FFD166', fontWeight: 850 }}>
-              {q.icone} {q.surnom}
-            </div>
-            <div style={{ fontSize: 13, color: '#9a93b5', marginTop: 5 }}>
-              💰 Entrée : à partir de {q.entree}
-            </div>
-            <div style={{ fontSize: 13, color: '#ffffff', marginTop: 5, fontWeight: 800 }}>
-              👥 {s.nbMembres || 0} connectés
-            </div>
-          </div>
-
-          <div style={{ fontSize: 20, color: q.couleur }}>→</div>
-        </div>
-      )
-    })}
-  </div>
 </div>
   </>    
   )
