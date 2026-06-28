@@ -34,10 +34,6 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
     </div>
   </div>
 
- <div style={styles.statsChat}>
-  🟢 42 en ligne maintenant
-</div>
-
 <div style={styles.statsChat}>
   🔥 18 messages aujourd’hui
 </div>
