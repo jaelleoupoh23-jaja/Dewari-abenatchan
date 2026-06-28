@@ -221,6 +221,12 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   }
 
   async function rejoindreSalon(salon) {
+    if (membre?.quartier && membre.quartier !== salon.nom) {
+    alert(
+      `Tu es déjà membre de ${membre.quartier}. Pour changer de quartier, contacte l’admin.`
+    );
+    return;
+  }
     if (salon.nbMembres >= 20 && membre?.salon_id !== salon.id) {
       alert('Ce salon est complet (20 joueurs maximum).')
       return
