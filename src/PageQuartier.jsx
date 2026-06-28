@@ -40,6 +40,7 @@ export default function PageQuartier({ quartier, onRetour }) {
     Envoyer
   </button>
 </div>
+        <div style={styles.carte}>
           <h2>🎲 Parties en cours</h2>
           <p>Observe ou rejoins les matchs disponibles.</p>
         </div>
