@@ -5,6 +5,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   const [connectes, setConnectes] = useState(0);
   const [messages, setMessages] = useState([]);
   const [totalMembres, setTotalMembres] = useState(0);
+  const [totalMessagesJour, setTotalMessagesJour] = useState(0);
 
   useEffect(() => {
     if (!quartier?.id) return;
@@ -12,13 +13,17 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
     chargerConnectes();
     chargerMessages();
     chargerTotalMembres();
+    chargerTotalMessagesJour();
 
     const channel = supabase
       .channel("quartier-live-" + quartier.id)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },
-        () => chargerMessages()
+        () => {
+          chargerMessages();
+          chargerTotalMessagesJour();
+        }
       )
       .on(
         "postgres_changes",
@@ -34,6 +39,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
       chargerConnectes();
       chargerMessages();
       chargerTotalMembres();
+      chargerTotalMessagesJour();
     }, 3000);
 
     return () => {
@@ -70,6 +76,19 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
       .limit(3);
 
     setMessages((data || []).reverse());
+  }
+
+  async function chargerTotalMessagesJour() {
+    const debutJour = new Date();
+    debutJour.setHours(0, 0, 0, 0);
+
+    const { count } = await supabase
+      .from("messages")
+      .select("*", { count: "exact", head: true })
+      .eq("salon_id", quartier?.id)
+      .gte("created_at", debutJour.toISOString());
+
+    setTotalMessagesJour(count || 0);
   }
 
   return (
@@ -110,7 +129,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
         </div>
 
         <div style={styles.statsChat}>
-          🔥 {messages.length} derniers messages
+          🔥 {totalMessagesJour} messages aujourd’hui
         </div>
 
         <button onClick={() => onOuvrirChat(quartier)} style={styles.bouton}>
@@ -160,31 +179,11 @@ const styles = {
     textAlign: "center",
     marginBottom: 20
   },
-  icone: {
-    fontSize: 48,
-    marginBottom: 14
-  },
-  titre: {
-    fontSize: 36,
-    fontWeight: 950,
-    margin: "8px 0"
-  },
-  surnom: {
-    color: "#FFD166",
-    fontSize: 20,
-    fontWeight: 900,
-    marginBottom: 16
-  },
-  connectes: {
-    fontSize: 20,
-    fontWeight: 900,
-    marginBottom: 8
-  },
-  membres: {
-    color: "rgba(255,255,255,0.75)",
-    fontSize: 15,
-    fontWeight: 800
-  },
+  icone: { fontSize: 48, marginBottom: 14 },
+  titre: { fontSize: 36, fontWeight: 950, margin: "8px 0" },
+  surnom: { color: "#FFD166", fontSize: 20, fontWeight: 900, marginBottom: 16 },
+  connectes: { fontSize: 20, fontWeight: 900, marginBottom: 8 },
+  membres: { color: "rgba(255,255,255,0.75)", fontSize: 15, fontWeight: 800 },
   carte: {
     background: "rgba(28,24,58,0.95)",
     border: "1px solid rgba(255,255,255,0.12)",
@@ -192,15 +191,8 @@ const styles = {
     padding: 18,
     marginBottom: 18
   },
-  h2: {
-    fontSize: 26,
-    fontWeight: 950,
-    marginBottom: 16
-  },
-  messages: {
-    display: "grid",
-    gap: 12
-  },
+  h2: { fontSize: 26, fontWeight: 950, marginBottom: 16 },
+  messages: { display: "grid", gap: 12 },
   message: {
     background: "#22306b",
     borderRadius: 14,
@@ -226,9 +218,5 @@ const styles = {
     fontWeight: 950,
     cursor: "pointer"
   },
-  p: {
-    color: "rgba(255,255,255,0.78)",
-    fontSize: 16,
-    lineHeight: 1.4
-  }
+  p: { color: "rgba(255,255,255,0.78)", fontSize: 16, lineHeight: 1.4 }
 };
