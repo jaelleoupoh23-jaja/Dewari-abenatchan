@@ -94,7 +94,7 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
           </div>
 
           <div style={styles.statsChat}>
-            🔥 {totalMessages} messages aujourd’hui
+           🔥 {messages.length} messages aujourd’hui
           </div>
 
           <button style={styles.bouton}>Entrer dans le chat →</button>
