@@ -2667,5 +2667,5 @@ jungleDecoration: {
   zoneSaisie: { display: 'flex', alignItems: 'center', gap: 8, padding: 16, borderTop: '1px solid #2a2745' },
   boutonPhoto: { background: 'none', border: 'none', fontSize: 20, flexShrink: 0 },
   inputChat: { flex: 1, padding: 10, borderRadius: 20, border: '1px solid #3a3658', background: '#221f3b', color: '#fff' },
-boutonEnvoyer: { background: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)', color: '#fff', border: 'none', borderRadius: '50%', width: 40, height: 40, fontWeight: 900 };
+boutonEnvoyer: { background: 'linear-gradient(135deg,#FF4D6D,#7B2CBF)', color: '#fff', border: 'none', borderRadius: '50%', width: 40, height: 40, fontWeight: 900 }
 };
