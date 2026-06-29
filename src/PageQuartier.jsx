@@ -4,12 +4,15 @@ import { supabase } from "./supabaseClient";
 export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
   const [connectes, setConnectes] = useState(0);
   const [messages, setMessages] = useState([]);
+  const [totalMembres, setTotalMembres] = useState(0);
+const [totalMessages, setTotalMessages] = useState(0);
 
   useEffect(() => {
     if (!quartier?.id) return;
 
     chargerConnectes();
     chargerMessages();
+    chargerTotalMembres();
 
     const channel = supabase
       .channel("quartier-live-" + quartier.id)
