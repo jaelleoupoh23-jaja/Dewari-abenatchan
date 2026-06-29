@@ -410,7 +410,9 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
       <div style={st.section}>
         <div style={st.sectionTitre}>Mon compte</div>
         <div style={st.sectionSousTitre}>Connecte-toi pour voir ton profil</div>
-        <button onClick={onConnexion} style={{ ...st.boutonPrincipal, marginTop: 14 }}>Se connecter / Créer un compte</button>
+        <button onClick={onConnexion} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
+          Se connecter / Créer un compte
+        </button>
       </div>
     )
   }
@@ -420,25 +422,39 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   return (
     <div style={st.section}>
       <div style={st.sectionTitre}>Mon compte</div>
+
       <div style={st.carteCompte}>
-        <div style={st.avatarGroupe}>{(membre.pseudo || '?').slice(0, 2).toUpperCase()}</div>
+        <div style={st.avatarGroupe}>
+          {(membre.pseudo || '?').slice(0, 2).toUpperCase()}
+        </div>
+
         <div style={{ marginLeft: 12 }}>
           <div style={{ fontWeight: 800, fontSize: 16 }}>{membre.pseudo}</div>
-          <div style={{ fontSize: 13, color: '#9a93b5' }}>{membre?.quartier
-  ? `Dans le quartier ${membre.quartier}`
-  : "Pas encore dans un quartier"}
+          <div style={{ fontSize: 13, color: '#9a93b5' }}>
+            {membre?.quartier
+              ? `Dans le quartier ${membre.quartier}`
+              : "Pas encore dans un quartier"}
+          </div>
         </div>
       </div>
+
       {salonActuel && (
-        <button onClick={() => onRetourSalon(salonActuel)} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
-        Retourner dans {membre?.quartier || salonActuel.nom}
+        <button
+          onClick={() => onRetourSalon(salonActuel)}
+          style={{ ...st.boutonPrincipal, marginTop: 14 }}
+        >
+          Retourner dans {membre?.quartier || salonActuel.nom}
         </button>
       )}
-      <button onClick={onDeconnexion} style={{ ...st.lienFermer, marginTop: 14, border: '1px solid #3a3658', borderRadius: 10, padding: 10 }}>
+
+      <button
+        onClick={onDeconnexion}
+        style={{ ...st.lienFermer, marginTop: 14, border: '1px solid #3a3658', borderRadius: 10, padding: 10 }}
+      >
         Se déconnecter
       </button>
     </div>
-  );
+  )
 }
 
 function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, onOuvrirSpectateur, onOuvrirDeEnLigne, refTournoi, refSalons }) {
