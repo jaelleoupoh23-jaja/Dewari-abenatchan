@@ -507,8 +507,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
     Se déconnecter
   </button>
 </div>
-</div>
-      
+)      
 }
 function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, onOuvrirSpectateur, onOuvrirDeEnLigne, refTournoi, refSalons }) {
   const [index, setIndex] = useState(0)
