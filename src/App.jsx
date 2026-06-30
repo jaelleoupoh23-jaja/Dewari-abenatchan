@@ -257,7 +257,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   }
 
   
- function allerA(id) 
+ function allerA(id) {
 if (id === 'compte') {
   chargerMembre()
   setEcran('compte')
