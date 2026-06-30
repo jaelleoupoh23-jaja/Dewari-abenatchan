@@ -412,8 +412,9 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   if (!session || !membre) {
     return (
       <div style={st.section}>
-        <div style={st.sectionTitre}>Mon compte</div>
-        <div style={st.sectionSousTitre}>Connecte-toi pour voir ton profil</div>
+        <div style={st.sectionTitre}>👤 Mon compte</div>
+        <div style={st.sectionSousTitre}>Connecte-toi pour voir ton profil.</div>
+
         <button onClick={onConnexion} style={{ ...st.boutonPrincipal, marginTop: 14 }}>
           Se connecter / Créer un compte
         </button>
@@ -425,42 +426,46 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
 
   return (
     <div style={st.section}>
-      <div style={st.sectionTitre}>Mon compte</div>
+      <div style={st.sectionTitre}>👤 Mon compte</div>
 
       <div style={st.carteCompte}>
         <div style={st.avatarGroupe}>
-          {(membre.pseudo || '?').slice(0, 2).toUpperCase()}
+          {(membre.pseudo || "?").slice(0, 2).toUpperCase()}
         </div>
 
-        <div style={{ marginLeft: 12 }}>
-          <div style={{ fontWeight: 800, fontSize: 16 }}>{membre.pseudo}</div>
-          <div style={{ fontSize: 13, color: '#9a93b5' }}>
-            {membre?.quartier
-              ? `Dans le quartier ${membre.quartier}`
-              : "Pas encore dans un quartier"}
-          </div>
+        <div style={{ marginTop: 12, fontSize: 22, fontWeight: 950 }}>
+          {membre.pseudo || "Joueur Dewari"}
         </div>
-      </div>
 
-      {salonActuel && (
+        <div style={{ color: "#9a93b5", fontSize: 13, marginTop: 4 }}>
+          Profil joueur
+        </div>
+
+        <div style={st.details}>
+          <p style={{ margin: "6px 0" }}>🏘️ Quartier : <strong>{membre.quartier || "Non défini"}</strong></p>
+          <p style={{ margin: "6px 0" }}>🟢 Statut : <strong>Connecté</strong></p>
+          <p style={{ margin: "6px 0" }}>🎲 Salon actuel : <strong>{salonActuel?.nom || "Aucun salon"}</strong></p>
+        </div>
+
+        {salonActuel && (
+          <button
+            onClick={() => onRetourSalon(salonActuel)}
+            style={{ ...st.boutonPrincipal, marginTop: 14 }}
+          >
+            🎮 Retourner dans {membre.quartier || salonActuel.nom}
+          </button>
+        )}
+
         <button
-          onClick={() => onRetourSalon(salonActuel)}
-          style={{ ...st.boutonPrincipal, marginTop: 14 }}
+          onClick={onDeconnexion}
+          style={{ ...st.lienFermer, marginTop: 14, border: "1px solid #3a3658", borderRadius: 10, padding: 10 }}
         >
-          Retourner dans {membre?.quartier || salonActuel.nom}
+          Se déconnecter
         </button>
-      )}
-
-      <button
-        onClick={onDeconnexion}
-        style={{ ...st.lienFermer, marginTop: 14, border: '1px solid #3a3658', borderRadius: 10, padding: 10 }}
-      >
-        Se déconnecter
-      </button>
+      </div>
     </div>
   )
 }
-
 function Accueil({ salons, tournoi, inscritTournoi, onChoisirSalon, onOuvrirTournoi, onOuvrirDe, onOuvrirLudo, onOuvrirMultijoueur, onOuvrirSpectateur, onOuvrirDeEnLigne, refTournoi, refSalons }) {
   const [index, setIndex] = useState(0)
 
