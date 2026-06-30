@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
 
-const DATE_TOURNOI = '2026-12-01T00:00:00Z'
+const DATE_TOURNOI = "2026-12-01T00:00:00Z"
 
 function calculerCompteARebours() {
   const maintenant = new Date().getTime()
@@ -11,11 +11,11 @@ function calculerCompteARebours() {
     jours: Math.floor(distance / (1000 * 60 * 60 * 24)),
     heures: Math.floor((distance / (1000 * 60 * 60)) % 24),
     minutes: Math.floor((distance / (1000 * 60)) % 60),
-    secondes: Math.floor((distance / 1000) % 60)
+    secondes: Math.floor((distance / 1000) % 60),
   }
 }
 
-export default function PageAccueil({ onCommencer, onOuvrirTournoi }) {
+export default function PageAccueil({ onCommencer }) {
   const [temps, setTemps] = useState(calculerCompteARebours())
 
   useEffect(() => {
@@ -28,13 +28,14 @@ export default function PageAccueil({ onCommencer, onOuvrirTournoi }) {
 
   return (
     <div style={styles.page}>
-      <div style={styles.container}>
-        <div style={styles.logo}>⚔️🎲🚀</div>
+      <div style={styles.card}>
+        <div style={styles.emojis}>⚔️ 🎲 🚀</div>
 
         <div style={styles.badge}>L'expérience ivoirienne en ligne</div>
 
         <h1 style={styles.titre}>
-          DEWARI<br />
+          DEWARI
+          <br />
           <span style={styles.sousTitre}>abenatchai</span>
         </h1>
 
@@ -46,8 +47,7 @@ export default function PageAccueil({ onCommencer, onOuvrirTournoi }) {
         </div>
 
         <section style={styles.carteTournoi}>
-          <div style={styles.sectionBadge}>🏆Grand Tournoi National</div>
-
+          <div style={styles.sectionBadge}>🏆 Grand Tournoi National</div>
 
           <div style={styles.recompenses}>
             <div>🥇 1er : <strong>1 000 000 FCFA</strong></div>
@@ -55,58 +55,45 @@ export default function PageAccueil({ onCommencer, onOuvrirTournoi }) {
             <div>🥉 3e : <strong>250 000 FCFA</strong></div>
           </div>
 
-
           <p style={styles.inscriptionTexte}>
-           🕒 Les inscriptions seront bientôt ouvertes.
-En attendant, prépare-toi pour le Tournoi de Décembre  !
+            🕒 Les inscriptions seront bientôt ouvertes.
+            <br />
+            En attendant, prépare-toi pour le Tournoi de Décembre !
           </p>
 
-        <button
-  style={styles.boutonTournoi}
-  onClick={onOuvrirTournoi}
->
-  🏆 Voir les tournois
-</button>
+          <button style={styles.boutonTournoi} onClick={onCommencer}>
+            🏆 Voir les tournois
+          </button>
         </section>
 
-      
+        <section style={styles.sectionSimple}>
+          <h2 style={styles.sectionTitre}>🌍 Choisis ton univers</h2>
+
+          <p style={styles.texteFort}>
+            Le respect se gagne quartier par quartier.
+          </p>
 
           <p style={styles.texte}>
-            Chaque quartier aura son propre championnat national et international.
+            🤫 Tout ce qui se passe dans ton quartier... reste dans ton quartier.
+          </p>
+
+          <p style={styles.texte}>
+            🔥 <strong>Yopougon</strong> — Les Ultras
+            <br />
+            🕶️ <strong>Djorobité</strong> — La Conspi
+            <br />
+            🥁 <strong>Bingerville</strong> — Les Tok-Tok
+            <br />
+            ✨ <strong>...et bien d'autres quartiers t'attendent.</strong>
           </p>
 
           <p style={styles.texteFort}>
-            👑 Les meilleurs joueurs des quartiers s'affronteront pour décrocher le titre de Roi de Déwari.
+            Entre dans l'arène et représente ton quartier.
           </p>
-
         </section>
 
-       
-      <section style={styles.sectionSimple}>
-  <h2 style={styles.sectionTitre}>🌍 Choisis ton univers</h2>
-
-  <p style={styles.texteFort}>
-    Le respect se gagne quartier par quartier.
-  </p>
-
-  <p style={styles.texte}>
-    🤫 Tout ce qui se passe dans ton quartier... reste dans ton quartier.
-  </p>
-
-  <p style={styles.texte}>
-    🔥 <strong>Yopougon</strong> — Les Ultras<br />
-    🕶️ <strong>Djorobité</strong> — La Conspi<br />
-    🥁 <strong>Bingerville</strong> — Les Tok-Tok<br />
-    ✨ <strong>...et bien d'autres quartiers t'attendent.</strong>
-  </p>
-
-  <p style={styles.texteFort}>
-    Entre dans l'arène et représente ton quartier.
-  </p>
-</section>
-          
         <button onClick={onCommencer} style={styles.bouton}>
-          ⚔️ Choisis mon quartier
+          ⚔️ Choisir mon quartier
         </button>
 
         <p style={styles.note}>
@@ -121,189 +108,146 @@ En attendant, prépare-toi pour le Tournoi de Décembre  !
 
 const styles = {
   page: {
-    minHeight: '100vh',
-    background: 'radial-gradient(circle at top, #3b0a66, #10051f 55%, #05020c)',
-    color: 'white',
-    display: 'flex',
-    justifyContent: 'center',
-    padding: 18,
-    textAlign: 'center',
-    boxSizing: 'border-box'
+    minHeight: "100vh",
+    background:
+      "radial-gradient(circle at top, #3b0a66, #10051f 55%, #05020c)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: "24px 12px",
+    color: "#fff",
+    fontFamily: "Poppins, sans-serif",
   },
-  container: {
-    width: '100%',
-    maxWidth: 460,
-    borderRadius: 34,
-    padding: '28px 18px',
-    background: 'linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03))',
-    boxShadow: '0 25px 80px rgba(0,0,0,0.48)',
-    border: '1px solid rgba(255,255,255,0.12)',
-    margin: 'auto 0'
+  card: {
+    width: "100%",
+    maxWidth: 390,
+    background: "linear-gradient(180deg, #35146d, #15111f)",
+    borderRadius: 28,
+    padding: 22,
+    textAlign: "center",
+    boxShadow: "0 20px 60px rgba(0,0,0,.45)",
+    border: "1px solid rgba(255,255,255,.12)",
   },
-  logo: {
-    fontSize: 56,
-    marginBottom: 14
+  emojis: {
+    fontSize: 42,
+    marginBottom: 12,
   },
   badge: {
-    display: 'inline-block',
-    padding: '8px 14px',
+    display: "inline-block",
+    background: "rgba(255, 165, 0, .25)",
+    color: "#FFD166",
+    padding: "8px 14px",
     borderRadius: 999,
-    background: 'rgba(255,184,0,0.16)',
-    color: '#FFD166',
-    fontSize: 13,
-    fontWeight: 900,
-    marginBottom: 18
+    fontWeight: 800,
+    fontSize: 12,
+    marginBottom: 14,
   },
   titre: {
-    fontSize: 40,
-    lineHeight: 1.08,
-    margin: '0 0 16px',
-    fontWeight: 950
+    fontSize: 42,
+    lineHeight: 1,
+    margin: "8px 0 16px",
+    fontWeight: 950,
   },
   sousTitre: {
-    fontSize: 32,
-    fontWeight: 850,
-    textTransform: 'lowercase'
+    fontSize: 34,
+    textTransform: "lowercase",
   },
   accroche: {
-    display: 'grid',
-    gap: 7,
-    marginBottom: 18,
-    fontWeight: 850,
+    fontWeight: 800,
     fontSize: 16,
-    lineHeight: 1.35
+    lineHeight: 1.7,
+    marginBottom: 22,
   },
   signature: {
-    color: '#FFD166',
-    fontWeight: 950,
-    marginTop: 3
+    color: "#FFD166",
+    marginTop: 6,
   },
   carteTournoi: {
+    background: "linear-gradient(135deg, rgba(255,77,109,.45), rgba(255,190,11,.22))",
+    border: "1px solid rgba(255,209,102,.45)",
     borderRadius: 24,
-    padding: '18px 14px',
-    background: 'linear-gradient(180deg, rgba(255,77,109,0.18), rgba(255,184,0,0.08))',
-    border: '1px solid rgba(255,209,102,0.24)',
-    marginBottom: 14
+    padding: 20,
+    marginBottom: 18,
+    boxShadow: "0 12px 35px rgba(255,77,109,.18)",
   },
   sectionBadge: {
-    color: '#FFD166',
-    fontSize: 18,
+    color: "#FFD166",
+    fontSize: 20,
     fontWeight: 950,
-    textTransform: 'uppercase',
-    marginBottom: 6
-  },
-  dateTournoi: {
-    fontSize: 14,
-    opacity: 0.85,
-    marginBottom: 12,
-    fontWeight: 750
+    textTransform: "uppercase",
+    marginBottom: 14,
   },
   recompenses: {
-    display: 'grid',
-    gap: 7,
-    fontSize: 15,
-    marginBottom: 14
-  },
-  compteTitre: {
-    fontSize: 13,
-    color: '#FFD166',
-    fontWeight: 900,
-    marginBottom: 8
-  },
-  compteRebours: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: 7,
-    marginBottom: 12
-  },
-  caseTemps: {
-    background: 'rgba(0,0,0,0.22)',
-    borderRadius: 12,
-    padding: '8px 4px',
-    border: '1px solid rgba(255,255,255,0.08)'
+    fontSize: 16,
+    lineHeight: 1.8,
+    fontWeight: 800,
+    marginBottom: 14,
   },
   inscriptionTexte: {
-    fontSize: 13,
+    color: "#FFD166",
+    fontWeight: 900,
     lineHeight: 1.4,
-    fontWeight: 850,
-    color: '#FFD166',
-    margin: '12px auto 10px'
+    margin: "14px 0",
   },
   boutonTournoi: {
-    border: 'none',
+    width: "100%",
+    border: "none",
     borderRadius: 18,
-    padding: '13px 18px',
-    width: '100%',
-    maxWidth: 300,
+    padding: "15px 18px",
+    background: "linear-gradient(135deg, #FF4D6D, #FFBE0B)",
+    color: "#fff",
     fontWeight: 950,
-    fontSize: 14,
-    color: 'white',
-    background: 'linear-gradient(135deg,#FF4D6D,#FFB800)',
-    boxShadow: '0 10px 24px rgba(255,77,109,0.30)',
-    cursor: 'pointer'
+    fontSize: 16,
+    cursor: "pointer",
   },
   sectionSimple: {
+    background: "rgba(255,255,255,.08)",
+    border: "1px solid rgba(255,255,255,.13)",
     borderRadius: 22,
-    padding: '15px 14px',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    marginBottom: 14
+    padding: 18,
+    marginBottom: 18,
   },
   sectionTitre: {
-    margin: '0 0 8px',
-    fontSize: 17,
+    color: "#FFD166",
+    fontSize: 22,
+    margin: "0 0 12px",
     fontWeight: 950,
-    color: '#FFD166'
   },
   texte: {
-    margin: '0 0 8px',
-    fontSize: 14,
-    lineHeight: 1.45,
-    opacity: 0.88,
-    fontWeight: 650
+    fontSize: 15,
+    lineHeight: 1.6,
+    margin: "10px 0",
+    fontWeight: 700,
   },
   texteFort: {
-    margin: 0,
-    fontSize: 14,
-    lineHeight: 1.45,
-    fontWeight: 900
-  },
-  lienQuartiers: {
-    marginTop: 12,
-    color: '#FFD166',
+    color: "#FFD166",
+    fontSize: 16,
+    lineHeight: 1.5,
+    margin: "10px 0",
     fontWeight: 950,
-    fontSize: 14
-  },
-  rois: {
-    display: 'grid',
-    gap: 7,
-    fontSize: 15,
-    fontWeight: 850
   },
   bouton: {
-    border: 'none',
-    borderRadius: 22,
-    padding: '17px 28px',
-    width: '100%',
-    maxWidth: 330,
+    width: "100%",
+    border: "none",
+    borderRadius: 18,
+    padding: "16px 18px",
+    background: "linear-gradient(135deg, #FF4D6D, #FFBE0B)",
+    color: "#fff",
     fontWeight: 950,
     fontSize: 17,
-    color: 'white',
-    background: 'linear-gradient(135deg,#FF4D6D,#FFB800)',
-    boxShadow: '0 14px 30px rgba(255,77,109,0.35)',
-    cursor: 'pointer',
-    marginTop: 2
+    cursor: "pointer",
+    boxShadow: "0 14px 30px rgba(255,77,109,.3)",
   },
   note: {
     fontSize: 12,
-    opacity: 0.62,
+    color: "rgba(255,255,255,.72)",
+    marginTop: 18,
     lineHeight: 1.4,
-    margin: '18px auto 12px',
-    maxWidth: 320
   },
   footer: {
     fontSize: 12,
-    opacity: 0.75,
-    fontWeight: 800
-  }
+    color: "#FFD166",
+    fontWeight: 800,
+    marginTop: 8,
+  },
 }
