@@ -81,7 +81,7 @@ export default function PageDeEnLigne({ onRetour }) {
     const gagnant = score1 >= 10 ? partie.joueur1_pseudo : score2 >= 10 ? partie.joueur2_pseudo : null
     if (gagnant === pseudo) {
   await supabase.rpc('ajouter_victoire', {
-    p_id: session.user.id
+p_id: (await supabase.auth.getUser()).data.user.id
   })
 }
     await supabase.from('parties_de_en_ligne').update({
