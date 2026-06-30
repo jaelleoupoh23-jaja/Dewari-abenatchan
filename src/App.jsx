@@ -607,10 +607,19 @@ const quartiers = [
     color: '#ddd'
   }}
 >
-  <div style={{ fontWeight: 700, fontSize: 15 }}>
-    📜 Conditions d'utilisation →
-  </div>
-
+<button
+  onClick={() => setEcran('juridique')}
+  style={{
+    background: 'none',
+    border: 'none',
+    color: '#fff',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer'
+  }}
+>
+  📜 Conditions d'utilisation →
+</button>
   <div
     style={{
       marginTop: 12,
