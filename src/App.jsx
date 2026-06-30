@@ -305,7 +305,7 @@ onTournoi={() => setEcran('tournoi')}
 )}
       {ecran === 'compte' && (
   <>
-    <div style={st.barreNom}>👑 Ludo-abenatchai</div>
+    <div style={st.barreNom}>👑 Ludowari-abenatchai</div>
     <NavOnglets onAller={allerA} />
 
     <Compte
@@ -320,7 +320,7 @@ onTournoi={() => setEcran('tournoi')}
 )}
       {ecran === 'accueil' && (
         <>
-          <div style={st.barreNom}>👑 Ludo-abenatchai</div>
+          <div style={st.barreNom}>👑 Ludowari-abenatchai</div>
           <NavOnglets onAller={allerA} />
           <div ref={refAccueil} />
         <Accueil
@@ -459,7 +459,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
 
           <div>
             <div style={{ fontSize: 26, fontWeight: 950 }}>
-              {membre.pseudo || "Joueur Ludo"}
+              {membre.pseudo || "Joueur Ludowari"}
             </div>
             <div style={{ color: "#cfc8ff", fontSize: 14 }}>
               Profil joueur
@@ -2359,7 +2359,7 @@ useEffect(() => {
   }
 
   const messageWhatsApp = encodeURIComponent(
-    `Bonjour 👋\n\nJe viens de remplir le formulaire d'inscription au Tournoi Ludo Abenatchai.\n\nPseudonyme : ${form.pseudo}\nNom : ${form.nom}\nQuartier : ${form.quartier}\nTéléphone : ${form.whatsapp}\n\nJe vais vous envoyer ma capture de paiement Wave.`
+    `Bonjour 👋\n\nJe viens de remplir le formulaire d'inscription au Tournoi Ludowari Abenatchai.\n\nPseudonyme : ${form.pseudo}\nNom : ${form.nom}\nQuartier : ${form.quartier}\nTéléphone : ${form.whatsapp}\n\nJe vais vous envoyer ma capture de paiement Wave.`
   )
 
   return (
@@ -2372,10 +2372,10 @@ useEffect(() => {
       </div>
 
       <div style={{ ...st.heroTexte, paddingTop: 24 }}>
-        <div style={st.eyebrow}>LUDO COMPÉTITION · DÉCEMBRE</div>
+        <div style={st.eyebrow}>Ludowari COMPÉTITION · DÉCEMBRE</div>
 
         <h1 style={{ fontSize: 30, fontWeight: 950, margin: "12px 0", color: "#fff" }}>
-          Inscription au Tournoi Ludo Abenatchai
+          Inscription au Tournoi Ludowari Abenatchai
         </h1>
 
         <div style={st.details}>
