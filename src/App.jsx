@@ -296,6 +296,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
       {ecran === 'landing' && (
 <PageAccueil
   onCommencer={() => setEcran('quartiers')}
+  onTournoi={() => setEcran('tournoi')}
   onOuvrirTournoi={() => setEcran('tournoi')}
 />
 )}
