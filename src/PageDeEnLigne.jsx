@@ -45,9 +45,14 @@ export default function PageDeEnLigne({ onRetour }) {
   async function creer() {
     const newCode = genererCode()
     const { data, error } = await supabase.from('parties_de_en_ligne').insert({
-      code: newCode,
-      joueur1_pseudo: pseudo,
-      etat: 'attente'
+     code: newCode,
+joueur1_pseudo: pseudo,
+etat: 'attente',
+score_joueur1: 0,
+score_joueur2: 0,
+tour_actuel: 'joueur1',
+dernier_de: null,
+gagnant: null
     }).select().single()
     if (error) { alert('Erreur création : ' + error.message); return }
     setCode(newCode)
@@ -65,7 +70,11 @@ export default function PageDeEnLigne({ onRetour }) {
     }
     if (!data.joueur2_pseudo) {
       const { data: updated } = await supabase.from('parties_de_en_ligne')
-        .update({ joueur2_pseudo: pseudo, etat: 'en_cours' })
+ .update({
+  joueur2_pseudo: pseudo,
+  etat: 'en_cours',
+  tour_actuel: data.tour_actuel || 'joueur1'
+})
         .eq('code', c).select().single()
       setPartie(updated)
       setMonRole('joueur2')
