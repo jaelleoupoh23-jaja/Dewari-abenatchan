@@ -494,7 +494,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
   )}
 
   <button
-    onClick={onDeconnexion}
+   onClick={() => onDeconnexion()}
     style={{
       ...st.lienFermer,
       marginTop: 16,
