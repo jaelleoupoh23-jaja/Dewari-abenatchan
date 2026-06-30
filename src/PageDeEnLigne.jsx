@@ -152,7 +152,18 @@ p_id: (await supabase.auth.getUser()).data.user.id
         {partie.etat === 'attente' && <div style={{ color: '#aaa', marginBottom: 20 }}>En attente du 2ème joueur...</div>}
         {partie.etat === 'fini' && <div style={{ fontSize: 20, fontWeight: 800, color: '#FFB800', marginBottom: 20 }}>🏆 {partie.gagnant} a gagné !</div>}
         {partie.etat === 'en_cours' && !spectateur && partie.tour_actuel === monRole && (
-          <button onClick={lancerDe} style={{ padding: '16px 40px', background: 'linear-gradient(135deg,#FF4D6D,#FFB800)', border: 'none', borderRadius: 16, color: '#fff', fontWeight: 800, fontSize: 18, cursor: 'pointer' }}>
+          <button onClick={lancerDe} style={
+  marginTop: 22,
+  width: '100%',
+  padding: 18,
+  border: 'none',
+  borderRadius: 18,
+  background: 'linear-gradient(135deg,#FF4D6D,#FFB800)',
+  color: '#fff',
+  fontWeight: 900,
+  fontSize: 18,
+  cursor: 'pointer'
+}}
             🎲 Lancer le dé
           </button>
         )}
