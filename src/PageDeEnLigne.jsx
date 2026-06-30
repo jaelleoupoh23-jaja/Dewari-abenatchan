@@ -162,8 +162,9 @@ p_id: (await supabase.auth.getUser()).data.user.id
   color: '#fff',
   fontWeight: 900,
   fontSize: 18,
-  cursor: 'pointer'
+  cursor: 'pointer',
 }}
+>            
             🎲 Lancer le dé
           </button>
         )}
