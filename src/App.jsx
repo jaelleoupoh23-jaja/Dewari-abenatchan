@@ -311,7 +311,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   tournoi={tournoi}
   inscritTournoi={inscritTournoi}
   onChoisirSalon={ouvrirSalon}
-  onOuvrirTournoi={() => setModalAuth({ pourTournoi: true })}
+  onOuvrirTournoi={() => setEcran('tournoi')}
   onOuvrirDe={() => setEcran('de')}
   onOuvrirLudo={() => setEcran('ludo')}
   onOuvrirMultijoueur={() => setEcran('multijoueur')}
@@ -2250,13 +2250,11 @@ function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour })
           </p>
         </div>
 
-        {!inscritTournoi ? (
-          <button onClick={onOuvrirInscription} style={st.boutonPrincipal}>
-            🏆 Je m'inscris · {prixInscription.toLocaleString('fr-FR')} FCFA
-          </button>
-        ) : (
-          <div style={st.confirme}>✅ Tu es inscrit au tournoi !</div>
-        )}
+       <div style={st.confirme}>
+  🕒 Les inscriptions seront bientôt ouvertes.
+  <br />
+  En attendant, prépare-toi pour le Tournoi de Décembre !
+</div>
       </div>
     </div>
   )
