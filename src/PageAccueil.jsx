@@ -15,7 +15,7 @@ function calculerCompteARebours() {
   }
 }
 
-export default function PageAccueil({ onCommencer }) {
+export default function PageAccueil({ onCommencer, onOuvrirTournoi }) {
   const [temps, setTemps] = useState(calculerCompteARebours())
 
   useEffect(() => {
