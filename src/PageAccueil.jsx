@@ -34,7 +34,7 @@ export default function PageAccueil({ onCommencer, onJeux, onTournoi }) {
         <div style={styles.badge}>L'expérience ivoirienne en ligne</div>
 
         <h1 style={styles.titre}>
-          DEWARI
+          LUDO
           <br />
           <span style={styles.sousTitre}>abenatchai</span>
         </h1>
