@@ -334,6 +334,7 @@ onTournoi={() => setEcran('tournoi')}
   onOuvrirMultijoueur={() => setEcran('multijoueur')}
   onOuvrirSpectateur={() => setEcran('spectateur')}
   onOuvrirDeEnLigne={() => setEcran('de_en_ligne')}
+  onJuridique={() => setEcran('juridique')}
   refTournoi={refTournoi}
   refSalons={refSalons}
 />
@@ -523,6 +524,7 @@ function Accueil({
   onOuvrirMultijoueur,
   onOuvrirSpectateur,
   onOuvrirDeEnLigne,
+  onJuridique,
   refTournoi,
   refSalons
 }) {
@@ -597,7 +599,7 @@ const quartiers = [
 </div>
 </div>
 <div
-  onClick={() => setEcran('juridique')}
+  onClick={onJuridique}
   style={{
     marginTop: 24,
     padding: '18px 16px',
@@ -608,7 +610,7 @@ const quartiers = [
   }}
 >
 <button
-  onClick={() => setEcran('juridique')}
+ onClick={onJuridique}
   style={{
     background: 'none',
     border: 'none',
