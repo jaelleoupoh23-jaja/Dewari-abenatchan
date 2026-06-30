@@ -475,7 +475,7 @@ function Compte({ session, membre, salons, onConnexion, onDeconnexion, onRetourS
           gap: 10,
         }}>
          <div>🆔 ID joueur : <strong>{membre.id || "Non disponible"}</strong></div>
-<div>💰 Solde : <strong>{membre.solde || 0} FCFA</strong></div>
+<div>💰 🪙 Pièces : <strong>{membre.solde || 0}</strong></div>
 <div>🎮 Parties jouées : <strong>{membre.parties_jouees || 0}</strong></div>
 <div>🏆 Victoires : <strong>{membre.victoires || 0}</strong></div>
 <div>⭐ Niveau : <strong>{membre.niveau || "Débutant"}</strong></div>
