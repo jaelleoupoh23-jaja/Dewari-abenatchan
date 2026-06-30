@@ -30,7 +30,13 @@ export default function PageDeEnLigne({ onRetour }) {
         event: '*', schema: 'public',
         table: 'parties_de_en_ligne'
       }, (payload) => {
-        if (payload.new && payload.new.code === code) setPartie(payload.new)
+       if (payload.new && payload.new.code === code) {
+  setPartie(payload.new)
+
+  if (payload.new.joueur2_pseudo && payload.new.etat === 'en_cours') {
+    setEcran('jeu')
+  }
+}
       })
       .subscribe()
     return () => supabase.removeChannel(canal)
