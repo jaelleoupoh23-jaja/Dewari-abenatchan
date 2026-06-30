@@ -2246,7 +2246,7 @@ function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour })
   </div>
 )}
 
-{etape === "formulaire" ? (
+
         {etape === "formulaire" ? (
           <div style={st.details}>
             <input
