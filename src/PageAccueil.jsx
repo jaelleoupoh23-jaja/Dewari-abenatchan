@@ -69,8 +69,7 @@ En attendant, prépare-toi pour le Tournoi de Décembre  !
 </button>
         </section>
 
-        <section style={styles.sectionSimple}>
-          <h2 style={styles.sectionTitre}>⚔️ Tournois des quartiers</h2>
+      
 
           <p style={styles.texte}>
             Chaque quartier aura son propre championnat national et international.
@@ -85,15 +84,29 @@ En attendant, prépare-toi pour le Tournoi de Décembre  !
         <section style={styles.sectionSimple}>
           <h2 style={styles.sectionTitre}>👑 Les Rois du Jeu</h2>
 
-          <div style={styles.rois}>
-            <div>🥇 Top 1</div>
-            <div>🥈 Top 2</div>
-            <div>🥉 Top 3</div>
-          </div>
-        </section>
+         <section style={styles.sectionSimple}>
+  <h2 style={styles.sectionTitre}>🌍 Choisis ton univers</h2>
 
+  <p style={styles.texteFort}>
+    Le respect se gagne quartier par quartier.
+  </p>
+   <p style={styles.texte}>
+  🤫 Tout ce qui se passe dans ton quartier... reste dans ton quartier.
+</p>        
+
+  <p style={styles.texte}>
+    🔥 <strong>Yopougon</strong> — Les Ultras<br />
+    🕶️ <strong>Djorobité</strong> — La Conspi<br />
+    🥁 <strong>Bingerville</strong> — Les Tok-Tok<br />
+    ✨ <strong>...et bien d'autres quartiers t'attendent.</strong>
+  </p>
+
+  <p style={styles.texteFort}>
+    Entre dans l'arène et représente ton quartier.
+  </p>
+</section>
         <button onClick={onCommencer} style={styles.bouton}>
-          ⚔️ Choisis ton quartier
+          ⚔️ Choisis mon quartier
         </button>
 
         <p style={styles.note}>
