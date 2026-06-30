@@ -46,7 +46,7 @@ export default function PageAccueil({ onCommencer }) {
         </div>
 
         <section style={styles.carteTournoi}>
-          <div style={styles.sectionBadge}>🏆 Grand Tournoi National</div>
+          <div style={styles.sectionBadge}>🏆Tournoi de Décembre</div>
           <div style={styles.dateTournoi}>Décembre 2026</div>
 
           <div style={styles.recompenses}>
@@ -55,22 +55,13 @@ export default function PageAccueil({ onCommencer }) {
             <div>🥉 3e : <strong>250 000 FCFA</strong></div>
           </div>
 
-          <div style={styles.compteTitre}>⏳ Début dans</div>
-
-          <div style={styles.compteRebours}>
-            <div style={styles.caseTemps}><strong>{temps.jours}</strong><span>jours</span></div>
-            <div style={styles.caseTemps}><strong>{temps.heures}</strong><span>h</span></div>
-            <div style={styles.caseTemps}><strong>{temps.minutes}</strong><span>min</span></div>
-            <div style={styles.caseTemps}><strong>{temps.secondes}</strong><span>s</span></div>
-          </div>
 
           <p style={styles.inscriptionTexte}>
-            🔥 Les inscriptions sont déjà ouvertes. Réserve ta place dès maintenant.
+           🕒 Les inscriptions seront bientôt ouvertes.
+En attendant, prépare-toi pour le Tournoi de Décembre !
           </p>
 
-          <button style={styles.boutonTournoi}>
-            🏆 Je m'inscris au Grand Tournoi
-          </button>
+        
         </section>
 
         <section style={styles.sectionSimple}>
