@@ -2244,14 +2244,9 @@ function PageTournoi({ tournoi, inscritTournoi, onOuvrirInscription, onRetour })
           </p>
         </div>
 
-        <div style={st.details}>
-          <p style={{ margin: '6px 0', fontWeight: 900, color: '#FFD166' }}>
-            💳 Paiement
-          </p>
-          <p style={{ margin: '6px 0' }}>
-            Dépôt obligatoire via Wave uniquement avant validation de l'inscription.
-          </p>
-        </div>
+       <button onClick={onOuvrirInscription} style={st.boutonPrincipal}>
+  🏆 Je m'inscris au tournoi
+</button>
 
        <div style={st.confirme}>
   🕒 Les inscriptions seront bientôt ouvertes.
