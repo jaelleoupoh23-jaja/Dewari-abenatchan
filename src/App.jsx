@@ -562,7 +562,7 @@ const quartiers = [
         <div onClick={onOuvrirDe} style={st.carteDe}>
           <div style={st.carteDeEmoji}>🎲</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dé</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Godé</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · premier à 10 gagne</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
@@ -571,7 +571,7 @@ const quartiers = [
      <div onClick={onOuvrirLudo} style={st.carteLudo}>
           <div style={st.carteDeEmoji}>♟️</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Dewari</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer au Ludowari</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>2 ou 4 joueurs · règles classiques</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
@@ -583,7 +583,7 @@ const quartiers = [
         }}>
           <div style={st.carteDeEmoji}>🌍</div>
           <div style={{ flex: 1, marginLeft: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Jouer en ligne</div>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>Ludowari en ligne</div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Défie un ami à distance</div>
           </div>
           <div style={{ fontSize: 20 }}>→</div>
