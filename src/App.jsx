@@ -294,7 +294,10 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   return (
     <div style={st.page}>
       {ecran === 'landing' && (
- <PageAccueil onCommencer={() => setEcran('quartiers')} />
+<PageAccueil
+  onCommencer={() => setEcran('quartiers')}
+  onOuvrirTournoi={() => setEcran('tournoi')}
+/>
 )}
       {ecran === "juridique" && (
     <PageJuridique
