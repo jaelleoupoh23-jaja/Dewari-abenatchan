@@ -171,18 +171,29 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   const refCompte = useRef(null)
   const refAccueil = useRef(null)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
-    const { data: listener } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
-    chargerSalons()
-    chargerTournoi()
-    return () => listener.subscription.unsubscribe()
-  }, [])
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    setSession(data.session)
 
-  useEffect(() => {
-    if (session) chargerMembre()
-    else setMembre(null)
-  }, [session])
+    const membreSauvegarde = localStorage.getItem('membre')
+    if (membreSauvegarde) {
+      setMembre(JSON.parse(membreSauvegarde))
+    }
+  })
+
+  const { data: listener } = supabase.auth.onAuthStateChange((_e, s) => {
+    setSession(s)
+  })
+
+  chargerSalons()
+  chargerTournoi()
+
+  return () => listener.subscription.unsubscribe()
+}, [])
+  
+useEffect(() => {
+  if (session) chargerMembre()
+}, [session])
 
   async function chargerMembre() {
     const { data } = await supabase
@@ -191,6 +202,7 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
       .eq('user_id', session.user.id)
       .maybeSingle()
     setMembre(data)
+    if (data) localStorage.setItem('membre', JSON.stringify(data))
   }
 
   async function chargerSalons() {
