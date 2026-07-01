@@ -381,13 +381,19 @@ onChoisirSalon={async (quartier) => {
   setEcran("quartier")
 
   if (membre?.pseudo) {
-    await supabase
-      .from("membres_quartiers")
-      .upsert({
-        salon_id: quartier.id,
-        pseudo: membre.pseudo,
-        quartier: quartier.nom
-      })
+   await supabase
+  .from("membres_quartiers")
+  .upsert(
+    {
+      user_id: session.user.id,
+      salon_id: quartier.id,
+      pseudo: membre.pseudo,
+      quartier: quartier.nom
+    },
+    {
+      onConflict: "user_id,salon_id"
+    }
+  )
   }
 }}
     onRetour={() => setEcran('accueil')}
