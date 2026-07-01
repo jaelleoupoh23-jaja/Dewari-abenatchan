@@ -376,55 +376,9 @@ onTournoi={() => setEcran('tournoi')}
       {ecran === 'quartiers' && (
   <PageQuartiers
     salons={salons}
-   onChoisirSalon={async (quartier) => {
-if (!membre || !membre?.pseudo) {
-  console.log("Membre non chargé :", membre)
-  return
-}
-     
+ onChoisirSalon={(quartier) => {
   setQuartierActif(quartier)
-
-  const { data: deja } = await supabase
-    .from("membres")
-    .select("id")
-    .eq("salon_id", quartier.id)
-    .eq("pseudo", membre?.pseudo)
-    .maybeSingle()
-
-  if (!deja) {
-
-    await supabase
-      .from("membres")
-      .insert({
-        salon_id: quartier.id,
-        quartier: quartier.nom,
-        pseudo: membre?.pseudo,
-        is_online: true,
-        last_seen: new Date().toISOString()
-      })
-
-    await supabase
-      .from("messages")
-      .insert({
-        salon_id: quartier.id,
-        pseudo: "Système",
-        contenu: `🎉 ${membre?.pseudo} a rejoint le quartier ${quartier.nom}.`
-      })
-
-  } else {
-
-    await supabase
-      .from("membres")
-      .update({
-        is_online: true,
-        last_seen: new Date().toISOString()
-      })
-      .eq("id", deja.id)
-
-  }
-
   setEcran("quartier")
-
 }}
     onRetour={() => setEcran('accueil')}
   />
