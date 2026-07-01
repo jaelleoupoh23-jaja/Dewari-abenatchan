@@ -376,9 +376,19 @@ onTournoi={() => setEcran('tournoi')}
       {ecran === 'quartiers' && (
   <PageQuartiers
     salons={salons}
- onChoisirSalon={(quartier) => {
+onChoisirSalon={async (quartier) => {
   setQuartierActif(quartier)
   setEcran("quartier")
+
+  if (membre?.pseudo) {
+    await supabase
+      .from("membres_quartiers")
+      .upsert({
+        salon_id: quartier.id,
+        pseudo: membre.pseudo,
+        quartier: quartier.nom
+      })
+  }
 }}
     onRetour={() => setEcran('accueil')}
   />
