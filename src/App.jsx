@@ -244,14 +244,18 @@ useEffect(() => {
       return
     }
     const { error } = await supabase
-  .from('membres')
-  .update({
+ .from("membres_quartiers")
+.upsert(
+  {
+    user_id: session.user.id,
     salon_id: salon.id,
     quartier: salon.nom,
-    is_online: true,
-    last_seen: new Date().toISOString()
-  })
-  .eq('id', membre.id)
+    pseudo: membre?.pseudo || "Joueur"
+  },
+  {
+    onConflict: "user_id,salon_id"
+  }
+)
     if (error) {
       alert(error.message.includes('complet') ? error.message : 'Erreur, réessaie.')
       return
