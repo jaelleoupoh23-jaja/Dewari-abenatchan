@@ -48,24 +48,24 @@ export default function PageQuartier({ quartier, onRetour, onOuvrirChat }) {
     };
   }, [quartier?.id]);
 
-  async function chargerConnectes() {
-    const { count } = await supabase
-      .from("membres")
-      .select("*", { count: "exact", head: true })
-      .eq("quartier", quartier?.nom)
-      .eq("is_online", true);
+async function chargerConnectes() {
+  const { count } = await supabase
+    .from("membres")
+    .select("*", { count: "exact", head: true })
+    .eq("salon_id", quartier?.id)
+    .eq("is_online", true)
 
-    setConnectes(count || 0);
-  }
+  setConnectes(count || 0)
+}
 
-  async function chargerTotalMembres() {
-    const { count } = await supabase
-      .from("membres")
-      .select("*", { count: "exact", head: true })
-      .eq("quartier", quartier?.nom);
+async function chargerTotalMembres() {
+  const { count } = await supabase
+    .from("membres")
+    .select("*", { count: "exact", head: true })
+    .eq("salon_id", quartier?.id)
 
-    setTotalMembres(count || 0);
-  }
+  setTotalMembres(count || 0)
+}
 
   async function chargerMessages() {
     const { data } = await supabase
