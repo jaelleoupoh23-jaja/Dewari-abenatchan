@@ -380,7 +380,7 @@ onChoisirSalon={async (quartier) => {
   setQuartierActif(quartier)
   setEcran("quartier")
 
-  if (membre?.pseudo) {
+  if (true) {
   const userId = session?.user?.id || localStorage.getItem("dew_user_id") || crypto.randomUUID()
 localStorage.setItem("dew_user_id", userId)
 
