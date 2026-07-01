@@ -404,9 +404,8 @@ const { error } = await supabase
   console.log("ERREUR MEMBRES_QUARTIERS :", error)
   alert("Erreur inscription quartier : " + error.message)
 }
-  }
 }}
-    onRetour={() => setEcran('accueil')}
+onRetour={() => setEcran('accueil')}
   />
 )}
 
