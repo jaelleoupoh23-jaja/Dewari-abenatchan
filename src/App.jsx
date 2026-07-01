@@ -399,8 +399,7 @@ const { error } = await supabase
 
 if (error) {
  alert("Erreur inscription quartier : " + error.message)
-  
-  )
+  }
   }
 }}
     onRetour={() => setEcran('accueil')}
