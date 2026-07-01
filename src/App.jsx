@@ -249,7 +249,6 @@ useEffect(() => {
   {
     user_id: session.user.id,
     salon_id: salon.id,
-    quartier: salon.nom,
     pseudo: membre?.pseudo || "Joueur"
   },
   {
