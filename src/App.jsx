@@ -267,7 +267,9 @@ useEffect(() => {
   is_online: true,
   last_seen: new Date().toISOString()
 })
-    setSalonActif(salon)
+  const salonMaj = { ...salon, nbMembres: (salon.nbMembres || 0) + 1 }
+
+setSalonActif(salonMaj)
     setEcran('chat')
     chargerSalons()
   }
