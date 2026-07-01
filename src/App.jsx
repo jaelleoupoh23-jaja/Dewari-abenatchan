@@ -2651,6 +2651,18 @@ function ChatSalon({ salon, membre, onRetour }) {
   const [messages, setMessages] = useState([])
   const [texte, setTexte] = useState('')
   const [nbMembres, setNbMembres] = useState(salon.nbMembres || 0)
+  useEffect(() => {
+  async function chargerMembresSalon() {
+    const { count } = await supabase
+      .from("membres_quartiers")
+      .select("*", { count: "exact", head: true })
+      .eq("salon_id", salon.id)
+
+    setNbMembres(count || 0)
+  }
+
+  chargerMembresSalon()
+}, [salon.id])
   const [enTrainEcrire, setEnTrainEcrire] = useState([])
   const [envoiPhoto, setEnvoiPhoto] = useState(false)
   const [enAppel, setEnAppel] = useState(false)
