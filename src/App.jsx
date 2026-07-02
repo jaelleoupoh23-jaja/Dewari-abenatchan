@@ -170,7 +170,9 @@ const [chatJeuOuvert, setChatJeuOuvert] = useState(false)
   const refSalons = useRef(null)
   const refCompte = useRef(null)
   const refAccueil = useRef(null)
-
+const ADMIN_EMAILS = [
+  "jaelle.oupoh23@gmail.com"
+]
 useEffect(() => {
   supabase.auth.getSession().then(({ data }) => {
     setSession(data.session)
@@ -249,7 +251,8 @@ useEffect(() => {
   }
 
   async function rejoindreSalon(salon) {
-    if (membre?.quartier && membre.quartier !== salon.nom) {
+    const isAdmin = ADMIN_EMAILS.includes(session?.user?.email)
+    if (!isAdmin && membre?.quartier && membre.quartier !== salon.nom) {
     alert(
       `Tu es déjà membre de ${membre.quartier}. Pour changer de quartier, contacte l’admin.`
     );
