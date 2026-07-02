@@ -2677,6 +2677,12 @@ function ChatSalon({ salon, membre, onRetour }) {
     chargerNbMembres()
     const canal = supabase
       .channel(`salon-${salon.id}`, { config: { presence: { key: membre.id } } })
+      .on('broadcast', { event: 'appel_entrant' }, ({ payload }) => {
+  if (payload.membre_id === membre.id) return
+
+  alert(`📞 Appel entrant de ${payload.pseudo}`)
+  sonPas()
+})
    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `salon_id=eq.${salon.id}` }, (payload) => {
   setMessages((m) => [...m, payload.new])
 
@@ -2780,6 +2786,14 @@ function ChatSalon({ salon, membre, onRetour }) {
       await client.publish([pisteAudio])
       setEnAppel(true)
       setParticipantsAppel([membre.id])
+      canalRef.current?.send({
+  type: "broadcast",
+  event: "appel_entrant",
+  payload: {
+    membre_id: membre.id,
+    pseudo: membre.pseudo || "Joueur"
+  }
+})
     } catch (err) {
       alert("Impossible de rejoindre l'appel. Vérifie que ton micro est autorisé.")
     }
