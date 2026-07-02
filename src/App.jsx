@@ -2649,6 +2649,19 @@ function ChatSalon({ salon, membre, onRetour }) {
   const [messages, setMessages] = useState([])
   const [texte, setTexte] = useState('')
   const [nbMembres, setNbMembres] = useState(salon.nbMembres || 0)
+  const [enTrainEcrire, setEnTrainEcrire] = useState([])
+  const [envoiPhoto, setEnvoiPhoto] = useState(false)
+  const [enAppel, setEnAppel] = useState(false)
+  const [micCoupe, setMicCoupe] = useState(false)
+  const [appelEntrant, setAppelEntrant] = useState(null)
+  const sonnerieRef = useRef(null)
+  const [participantsAppel, setParticipantsAppel] = useState([])
+  const finRef = useRef(null)
+  const canalRef = useRef(null)
+  const inputFichierRef = useRef(null)
+  const clientAgoraRef = useRef(null)
+  const pisteAudioRef = useRef(null)
+
   useEffect(() => {
   async function chargerMembresSalon() {
     const { count } = await supabase
@@ -2661,17 +2674,7 @@ function ChatSalon({ salon, membre, onRetour }) {
 
   chargerMembresSalon()
 }, [salon.id])
-  const [enTrainEcrire, setEnTrainEcrire] = useState([])
-  const [envoiPhoto, setEnvoiPhoto] = useState(false)
-  const [enAppel, setEnAppel] = useState(false)
-  const [micCoupe, setMicCoupe] = useState(false)
-  const [participantsAppel, setParticipantsAppel] = useState([])
-  const finRef = useRef(null)
-  const canalRef = useRef(null)
-  const inputFichierRef = useRef(null)
-  const clientAgoraRef = useRef(null)
-  const pisteAudioRef = useRef(null)
-
+ 
   useEffect(() => {
     chargerMessages()
     chargerNbMembres()
@@ -2702,6 +2705,18 @@ function ChatSalon({ salon, membre, onRetour }) {
 
   }   
 )
+      .on('broadcast', { event: 'appel_entrant' }, ({ payload }) => {
+  if (payload.membre_id === membre.id) return
+
+  setAppelEntrant(payload)
+
+  try {
+    const audio = new Audio("/notif.mp3")
+    audio.loop = true
+    sonnerieRef.current = audio
+    audio.play().catch(() => {})
+  } catch (e) {}
+})
       .on('broadcast', { event: 'frappe' }, ({ payload }) => {
         if (payload.membre_id === membre.id) return
         setEnTrainEcrire((liste) => {
