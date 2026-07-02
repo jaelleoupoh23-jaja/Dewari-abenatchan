@@ -2677,9 +2677,20 @@ function ChatSalon({ salon, membre, onRetour }) {
     chargerNbMembres()
     const canal = supabase
       .channel(`salon-${salon.id}`, { config: { presence: { key: membre.id } } })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `salon_id=eq.${salon.id}` }, (payload) => {
-        setMessages((m) => [...m, payload.new])
-      })
+   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `salon_id=eq.${salon.id}` }, (payload) => {
+  setMessages((m) => [...m, payload.new])
+
+  if (payload.new.membre_id !== membre.id) {
+    try {
+      const audio = new Audio("/notif.mp3")
+      audio.play().catch(() => {})
+    } catch (e) {}
+
+    if (document.hidden) {
+      document.title = "💬 Nouveau message"
+    }
+  }
+})
       .on('broadcast', { event: 'frappe' }, ({ payload }) => {
         if (payload.membre_id === membre.id) return
         setEnTrainEcrire((liste) => {
